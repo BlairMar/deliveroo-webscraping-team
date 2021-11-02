@@ -1,20 +1,24 @@
 
+#%%
 from selenium import webdriver
-from selenium.webdriver.common.by import By #\importing necessary modules.
-from time import sleep
+from selenium.webdriver.common.by import By
 import requests
+import time
+
+#%%
 
 class Scraper:
-    
- 
-    data = []
-    def __init__(self) -> None: #initialising Selenium and starting the webdriver.
+  
+    data = []  
+    def __init__(self) -> None:
         self.driver = webdriver.Chrome()
+        self.driver.get('https://deliveroo.co.uk')
+        self.__accept_cookies()
 
     def __accept_cookies(self):
-        # TODO
-        pass
-    
+        time.sleep(0.1)   ##could have a shorter sleep time
+        self.driver.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]').click()
+
     def __enter_address(self, address):
         # TODO
         pass
