@@ -15,6 +15,7 @@ class Scraper:
         self.driver.get('https://deliveroo.co.uk')
         self.__accept_cookies()
         self.__enter_address(address)   ### Only works if 'mark location' button does not require the location pin to be moved
+        self.__acknowledge_14_delivery()
   
 
     def __accept_cookies(self):
@@ -30,11 +31,26 @@ class Scraper:
             self.driver.find_element(By.XPATH, '/html/body/div[10]/div/div/div/div[2]/div/span/button').click() 
         except:  ##if map location does not show 
             pass
+        
+    
+    def __acknowledge_14_delivery(self):
+        # TODO
+        #find the "Ok button in 14 day delivery for new customers"
+        time.sleep(1)
+        try:
+            self.driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
+            
+        except:
+            pass
+             
+        #driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
+    
+        
 
     def __acknowledge_voucher(self):
         # TODO
         pass
-    
+        
     def __sort_page(self, option):
         # TODO
         pass
