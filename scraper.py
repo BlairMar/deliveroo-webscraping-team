@@ -15,6 +15,7 @@ class Scraper:
         self.driver.get('https://deliveroo.co.uk')
         self.__accept_cookies()
         self.__enter_address(address)   ### Only works if 'mark location' button does not require the location pin to be moved
+        self.__acknowledge_14_delivery
   
 
     def __accept_cookies(self):
