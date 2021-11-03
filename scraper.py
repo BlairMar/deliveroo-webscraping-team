@@ -38,8 +38,8 @@ class Scraper:
         #find the "Ok button in 14 day delivery for new customers"
         time.sleep(1)
         try:
-            accept_delivery_voucher = self.driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
-            print(accept_delivery_voucher.text)
+            self.driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
+            
         except:
             pass
              
