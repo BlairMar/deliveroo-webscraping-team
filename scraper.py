@@ -21,10 +21,13 @@ class Scraper:
         # TODO
         pass
     
+    def __acknowledge_14_delivery(self):
+        # TODO
+        driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
+    
     def __acknowledge_voucher(self):
         # TODO
-        pass
-    
+        
     def __sort_page(self, option):
         # TODO
         pass
