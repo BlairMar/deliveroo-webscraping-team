@@ -9,19 +9,28 @@ import time
 
 class Scraper:
   
-    data = []  
-    def __init__(self) -> None:
+    data = []
+    def __init__(self, address) -> None:
         self.driver = webdriver.Chrome()
         self.driver.get('https://deliveroo.co.uk')
         self.__accept_cookies()
+        self.__enter_address(address)   ### Only works if 'mark location' button does not require the location pin to be moved
+  
 
     def __accept_cookies(self):
         time.sleep(0.1)   ##could have a shorter sleep time
         self.driver.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]').click()
 
     def __enter_address(self, address):
-        # TODO
-        pass
+        self.addressbar = self.driver.find_element(By.XPATH, '//*[@id="location-search"]')
+        self.addressbar.send_keys(f'{address}')
+        self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div[2]/div[3]/div/div[1]/div/div[2]/div/div/div/div/div/div[2]/span/button').click()
+        time.sleep(0.5)
+        try:
+            self.driver.find_element(By.XPATH, '/html/body/div[10]/div/div/div/div[2]/div/span/button').click() 
+        except:  ##if map location does not show 
+            pass
+        
     
     def __acknowledge_14_delivery(self):
         # TODO
@@ -34,6 +43,8 @@ class Scraper:
              
         #driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
     
+        
+
     def __acknowledge_voucher(self):
         # TODO
         pass
