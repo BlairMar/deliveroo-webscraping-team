@@ -6,6 +6,7 @@ import requests
 import time
 
 import unittest
+import sys
 
 #%%
 
@@ -99,8 +100,12 @@ class Scraper:
         "https://deliveroo.co.uk/menu/london/fulham/mamino-fulham?day=today&geohash=gcpuuw8wdq1m&time=ASAP")
         self.getSummary()
 
+#%%
 
 class ScraperTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.handle = open ('scraper.py')
 
     def test_address_input(self):
         address = 'buckingham palace'
@@ -114,5 +119,12 @@ class ScraperTestCase(unittest.TestCase):
         scraper_test = Scraper(address)
         scraper_test.scrape()
         self.assert #something
+
+    
+    def tearDown(self):
+        self.handle.close()
+
+if __name__ == '__main__':
+    unittest.main(argv=[], verbosity=2, exit=False)
 
 
