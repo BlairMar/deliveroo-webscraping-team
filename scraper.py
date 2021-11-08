@@ -61,6 +61,17 @@ class Scraper:
             filter_list.find_elements(By.XPATH, './li/label/input')[self.sort_options[option]].click()
         except:
             pass
+        
+    def __collect_restaurants(self):
+        res_menu = self.driver.find_element(By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul')
+        res_list = self.res_menu.find_elements(By.TAG_NAME,'li')
+        urls = []
+        for res in res_list:
+            el = res.find_element(By.TAG_NAME,'a')
+            res_name = el.text
+            res_url = el.get_attribute('href')
+            urls.append((res_name,res_url))
+        return urls
 
     def getSummary(self):
         Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[1]')
