@@ -5,6 +5,9 @@ from selenium.webdriver.common.by import By
 import requests
 import time
 
+import unittest
+import sys
+
 #%%
 
 class Scraper:
@@ -96,3 +99,32 @@ class Scraper:
         self.driver.get(
         "https://deliveroo.co.uk/menu/london/fulham/mamino-fulham?day=today&geohash=gcpuuw8wdq1m&time=ASAP")
         self.getSummary()
+
+#%%
+
+class ScraperTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.handle = open ('scraper.py')
+
+    def test_address_input(self):
+        address = 'buckingham palace'
+        address_test = Scraper(address)
+        address_test.__enter_address(address)
+        self.assert #something
+        ##test will not work until address is removed from __init__
+
+    def scrape_data_test(self):
+        address = 'buckingham palace'
+        scraper_test = Scraper(address)
+        scraper_test.scrape()
+        self.assert #something
+
+    
+    def tearDown(self):
+        self.handle.close()
+
+if __name__ == '__main__':
+    unittest.main(argv=[], verbosity=2, exit=False)
+
+
