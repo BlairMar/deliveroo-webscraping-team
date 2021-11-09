@@ -111,7 +111,7 @@ class ScraperTestCase(unittest.TestCase):
         address = 'buckingham palace'
         address_test = Scraper(address)
         address_test.__enter_address(address)
-        self.assert #something
+        self.assertEqual(None) #something
         ##test will not work until address is removed from __init__
 
     def scrape_data_test(self):
