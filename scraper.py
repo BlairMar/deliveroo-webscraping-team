@@ -10,7 +10,7 @@ import time
 class Scraper:
   
     data = []
-    def __init__(self, address) -> None:
+    def __init__(self, address: str) -> None:
         self.driver = webdriver.Chrome()
         self.driver.get('https://deliveroo.co.uk')
         self.sort_options = {
@@ -20,6 +20,7 @@ class Scraper:
             'Time': 3,
             'Top_rated': 4
         }
+        self.address = address
 
     def __accept_cookies(self):
         time.sleep(0.1)   ##could have a shorter sleep time
@@ -103,5 +104,5 @@ class Scraper:
 
     def scrape(self):
         self.__accept_cookies()
-        self.__enter_address(address)   ### Only works if 'mark location' button does not require the location pin to be moved
+        self.__enter_address(self.address)   ### Only works if 'mark location' button does not require the location pin to be moved
         self.__acknowledge_14_delivery()
