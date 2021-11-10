@@ -94,25 +94,19 @@ class Scraper:
             elif 'View map' in item:
                 upper_bound = rawdata.index(item)
                 Scraper.sorteddata['Address'] = rawdata[upper_bound - 1]
-                upper_bound -= 2 # setting upper bound to 2 elements view map appears. 
+                upper_bound -= 2 # setting upper bound to 2 elements before view map appears. 
         Scraper.sorteddata['Tags'] = [item for item in rawdata[lower_bound:upper_bound]]   
-        
-        # at the moment, returns a list of all the data in the summary information. 
         self.getPicture()
         print(Scraper.sorteddata)
         return Scraper.sorteddata #defined as a global variable. 
     
     def getPicture(self):
         Image_info = self.driver.find_elements(By.XPATH,'//*[@class = "restaurant__image"]//*')
-        #Accessing the image info using XPATH. Probably a cleaner way of doing this. 
-
         txt = Image_info[1].get_attribute("style")
         src = txt.split('"') #Only need the url so the code splits string at ". 
         url = src[1]
         name = Scraper.sorteddata['Name']
-        path = f'{name}.jpg' #Path is created from the first element of the list returned by 
-                             #Summary Data. 
-                             #Downloading image from url. 
+        path = f'{name}.jpg' 
         image = requests.get(url).content
         with open(path, 'wb') as handler:
             handler.write(image)
