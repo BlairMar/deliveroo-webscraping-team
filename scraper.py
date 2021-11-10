@@ -11,8 +11,7 @@ import sys
 #%%
 
 class Scraper:
-  
-    data = []
+    sorteddata ={}
     def __init__(self, address) -> None:
         self.driver = webdriver.Chrome()
         self.driver.get('https://deliveroo.co.uk')
@@ -47,7 +46,7 @@ class Scraper:
     def __acknowledge_14_delivery(self):
         # TODO
         #find the "Ok button in 14 day delivery for new customers"
-        time.sleep(1)
+        time.sleep(1.5)
         try:
             self.driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
             
@@ -79,15 +78,29 @@ class Scraper:
 
     def getSummary(self):
         Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[1]')
-
-        for info in Summary_info: #Looping over list of summary information about the restaraunt.     
-            text = info.text
-            Scraper.data = text.splitlines()
-            #splits the string at new lines and stores as a list. 
-            #at some point, we need to implement storing and organising the data in dictionaries.
-        print(Scraper.data)
+        rawdata = Summary_info[0].text.splitlines()
+        Scraper.sorteddata = {
+            'Name':rawdata[0],
+             'Rating':None,
+              'Tags': [],
+               'Address':None,
+               'Url':None
+        }
+        lower_bound, upper_bound = 0 ,0
+        for item in rawdata:
+            if '+ rating' in item:
+                Scraper.sorteddata['Rating'] = item
+                lower_bound = rawdata.index(item)+1
+            elif 'View map' in item:
+                upper_bound = rawdata.index(item)
+                Scraper.sorteddata['Address'] = rawdata[upper_bound - 1]
+                upper_bound -= 2 # setting upper bound to 2 elements view map appears. 
+        Scraper.sorteddata['Tags'] = [item for item in rawdata[lower_bound:upper_bound]]   
+        
+        # at the moment, returns a list of all the data in the summary information. 
         self.getPicture()
-        return Scraper.data #defined as a global variable. 
+        print(Scraper.sorteddata)
+        return Scraper.sorteddata #defined as a global variable. 
     
     def getPicture(self):
         Image_info = self.driver.find_elements(By.XPATH,'//*[@class = "restaurant__image"]//*')
@@ -96,15 +109,16 @@ class Scraper:
         txt = Image_info[1].get_attribute("style")
         src = txt.split('"') #Only need the url so the code splits string at ". 
         url = src[1]
-        name = Scraper.data[0]
+        name = Scraper.sorteddata['Name']
         path = f'{name}.jpg' #Path is created from the first element of the list returned by 
                              #Summary Data. 
                              #Downloading image from url. 
         image = requests.get(url).content
         with open(path, 'wb') as handler:
             handler.write(image)
-        print(url)
-        return(url)    
+        #print(url)
+        Scraper.sorteddata['Url'] = url
+        return Scraper.sorteddata    
 
     def scrape(self):
         self.getSummary()
