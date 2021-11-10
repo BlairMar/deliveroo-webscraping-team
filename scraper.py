@@ -59,12 +59,14 @@ class Scraper:
         except:
             pass
         
-    def __collect_restaurants(self):
+    def __collect_restaurants(self, limit: int=None):
         res_menu = self.driver.find_element(By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul')
         res_list = res_menu.find_elements(By.TAG_NAME,'li')
         urls = []
         for res in res_list:
             try:
+                if limit is not None and len(urls) >= limit:
+                    break
                 el = res.find_element(By.TAG_NAME,'a')
                 res_name = el.text
                 res_url = el.get_attribute('href')
