@@ -73,7 +73,7 @@ class Scraper:
         return urls
 
     def __get_summary(self):
-        Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[1]')
+        Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div')
         rawdata = Summary_info[0].text.splitlines()
         Scraper.sorteddata = {
             'Name':rawdata[0],
@@ -92,11 +92,11 @@ class Scraper:
                 Scraper.sorteddata['Address'] = rawdata[upper_bound - 1]
                 upper_bound -= 2 # setting upper bound to 2 elements before view map appears. 
         Scraper.sorteddata['Tags'] = [item for item in rawdata[lower_bound:upper_bound]]   
-        self.getPicture()
+        self.__get_picture()
         print(Scraper.sorteddata)
         return Scraper.sorteddata #defined as a global variable. 
     
-    def getPicture(self):
+    def __get_picture(self):
         Image_info = self.driver.find_elements(By.XPATH,'//*[@class = "restaurant__image"]//*')
         txt = Image_info[1].get_attribute("style")
         src = txt.split('"') #Only need the url so the code splits string at ". 
@@ -118,7 +118,7 @@ class Scraper:
         urls = self.__collect_restaurants(10)
         for (name, url) in urls:
             self.driver.execute_script(f"window.open('{url}', '_blank');")
+            # self.driver.close()
+            self.driver.switch_to.window(self.driver.window_handles[-1])
             time.sleep(5)
-            #self.__get_summary()
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])
+            self.__get_summary()
