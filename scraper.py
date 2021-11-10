@@ -1,11 +1,8 @@
 
-#%%
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
 import time
-
-#%%
 
 class Scraper:
   
@@ -23,7 +20,7 @@ class Scraper:
         self.address = address
 
     def __accept_cookies(self):
-        time.sleep(0.1)   ##could have a shorter sleep time
+        time.sleep(1.5)   ##could have a shorter sleep time
         self.driver.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]').click()
 
     def __enter_address(self, address):
@@ -106,5 +103,14 @@ class Scraper:
 
     def scrape(self):
         self.__accept_cookies()
-        self.__enter_address(self.address)   ### Only works if 'mark location' button does not require the location pin to be moved
+        self.__enter_address(self.address)
         self.__acknowledge_14_delivery()
+        self.__sort_page()
+        time.sleep(5)
+        urls = self.__collect_restaurants(10)
+        for (name, url) in urls:
+            self.driver.execute_script(f"window.open('{url}', '_blank');")
+            time.sleep(5)
+            # self.__get_summary()
+            self.driver.close()
+            self.driver.switch_to.window(self.driver.window_handles[0])
