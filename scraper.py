@@ -1,19 +1,13 @@
 
-#%%
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
 import time
 
-import unittest
-import sys
-
-#%%
-
 class Scraper:
   
     data = []
-    def __init__(self, address) -> None:
+    def __init__(self, address: str) -> None:
         self.driver = webdriver.Chrome()
         self.driver.get('https://deliveroo.co.uk')
         self.sort_options = {
@@ -23,13 +17,10 @@ class Scraper:
             'Time': 3,
             'Top_rated': 4
         }
-        self.__accept_cookies()
-        self.__enter_address(address)   ### Only works if 'mark location' button does not require the location pin to be moved
-        self.__acknowledge_14_delivery()
-  
+        self.address = address
 
     def __accept_cookies(self):
-        time.sleep(0.1)   ##could have a shorter sleep time
+        time.sleep(1.5)   ##could have a shorter sleep time
         self.driver.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]').click()
 
     def __enter_address(self, address):
@@ -64,8 +55,24 @@ class Scraper:
             filter_list.find_elements(By.XPATH, './li/label/input')[self.sort_options[option]].click()
         except:
             pass
+        
+    def __collect_restaurants(self, limit: int=None):
+        res_menu = self.driver.find_element(By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul')
+        res_list = res_menu.find_elements(By.TAG_NAME,'li')
+        urls = []
+        for res in res_list:
+            try:
+                if limit is not None and len(urls) >= limit:
+                    break
+                el = res.find_element(By.TAG_NAME,'a')
+                res_name = el.text
+                res_url = el.get_attribute('href')
+                urls.append((res_name,res_url))
+            except:
+                pass
+        return urls
 
-    def getSummary(self):
+    def __get_summary(self):
         Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[1]')
 
         for info in Summary_info: #Looping over list of summary information about the restaraunt.     
@@ -74,10 +81,10 @@ class Scraper:
             #splits the string at new lines and stores as a list. 
             #at some point, we need to implement storing and organising the data in dictionaries.
         print(Scraper.data)
-        self.getPicture()
+        self.__get_picture()
         return Scraper.data #defined as a global variable. 
     
-    def getPicture(self):
+    def __get_picture(self):
         Image_info = self.driver.find_elements(By.XPATH,'//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[2]/div[1]/div/div')
         #Accessing the image info using XPATH. Probably a cleaner way of doing this. 
 
@@ -95,36 +102,15 @@ class Scraper:
         return(url)    
 
     def scrape(self):
-        #launches web browser and calls the next method. 
-        self.driver.get(
-        "https://deliveroo.co.uk/menu/london/fulham/mamino-fulham?day=today&geohash=gcpuuw8wdq1m&time=ASAP")
-        self.getSummary()
-
-#%%
-
-class ScraperTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.handle = open ('scraper.py')
-
-    def test_address_input(self):
-        address = 'buckingham palace'
-        address_test = Scraper(address)
-        address_test.__enter_address(address)
-        self.assertEqual(None) #something
-        ##test will not work until address is removed from __init__
-
-    def scrape_data_test(self):
-        address = 'buckingham palace'
-        scraper_test = Scraper(address)
-        scraper_test.scrape()
-        self.assert #something
-
-    
-    def tearDown(self):
-        self.handle.close()
-
-if __name__ == '__main__':
-    unittest.main(argv=[], verbosity=2, exit=False)
-
-
+        self.__accept_cookies()
+        self.__enter_address(self.address)
+        self.__acknowledge_14_delivery()
+        self.__sort_page()
+        time.sleep(5)
+        urls = self.__collect_restaurants(10)
+        for (name, url) in urls:
+            self.driver.execute_script(f"window.open('{url}', '_blank');")
+            time.sleep(5)
+            # self.__get_summary()
+            self.driver.close()
+            self.driver.switch_to.window(self.driver.window_handles[0])
