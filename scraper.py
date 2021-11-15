@@ -110,7 +110,7 @@ class Scraper:
         urls = self.__collect_restaurants(10)
         for (name, url) in urls:
             self.driver.execute_script(f"window.open('{url}', '_blank');")
-            time.sleep(5)
-            # self.__get_summary()
             self.driver.close()
             self.driver.switch_to.window(self.driver.window_handles[0])
+            time.sleep(5)
+            self.__get_summary()
