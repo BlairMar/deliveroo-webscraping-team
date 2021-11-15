@@ -73,7 +73,7 @@ class Scraper:
         return urls
 
     def __get_summary(self):
-        Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div')
+        Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[1]')
         rawdata = Summary_info[0].text.splitlines()
         Scraper.sorteddata = {
             'Name':rawdata[0],
@@ -118,7 +118,7 @@ class Scraper:
         urls = self.__collect_restaurants(10)
         for (name, url) in urls:
             self.driver.execute_script(f"window.open('{url}', '_blank');")
-            # self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[-1])
+            self.driver.close()
+            self.driver.switch_to.window(self.driver.window_handles[0])
             time.sleep(5)
             self.__get_summary()
