@@ -18,10 +18,12 @@ class Scraper:
             'Top_rated': 4
         }
         self.address = address
+        print(self.driver.find_element(By.XPATH,'//*'))
 
-    def __accept_cookies(self):
-        time.sleep(1.5)   ##could have a shorter sleep time
+    def _accept_cookies(self):
+        time.sleep(1.5)   ##self.driver.implicitly_wait(10)
         self.driver.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]').click()
+        return
 
     def __enter_address(self, address):
         self.addressbar = self.driver.find_element(By.XPATH, '//*[@id="location-search"]')
@@ -81,7 +83,7 @@ class Scraper:
             #splits the string at new lines and stores as a list. 
             #at some point, we need to implement storing and organising the data in dictionaries.
         print(Scraper.data)
-        self.__get_picture()
+        self._get_picture()
         return Scraper.data #defined as a global variable. 
     
     def __get_picture(self):
@@ -102,12 +104,12 @@ class Scraper:
         return(url)    
 
     def scrape(self):
-        self.__accept_cookies()
+        self._accept_cookies()
         self.__enter_address(self.address)
         self.__acknowledge_14_delivery()
         self.__sort_page()
         time.sleep(5)
-        urls = self.__collect_restaurants(10)
+        urls = self._collect_restaurants(10)
         for (name, url) in urls:
             self.driver.execute_script(f"window.open('{url}', '_blank');")
             time.sleep(5)
