@@ -73,7 +73,7 @@ class Scraper:
         return urls
 
     def __get_summary(self):
-        Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div')
+        Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[1]')
         rawdata = Summary_info[0].text.splitlines()
         Scraper.sorteddata = {
             'Name':rawdata[0],
