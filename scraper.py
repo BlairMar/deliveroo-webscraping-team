@@ -73,8 +73,12 @@ class Scraper:
         return urls
 
     def __get_summary(self):
-        Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[1]')
-        rawdata = Summary_info[0].text.splitlines()
+        try:
+            Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div/div[1]')
+            rawdata = Summary_info[0].text.splitlines()
+        except:
+            Summary_info = self.driver.find_elements(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div/div/div[2]')
+            rawdata = Summary_info[0].text.splitlines()
         Scraper.sorteddata = {
             'Name':rawdata[0],
              'Rating':None,
@@ -97,8 +101,12 @@ class Scraper:
         return Scraper.sorteddata #defined as a global variable. 
     
     def __get_picture(self):
-        Image_info = self.driver.find_elements(By.XPATH,'//*[@class = "restaurant__image"]//*')
-        txt = Image_info[1].get_attribute("style")
+        try:
+            Image_info = self.driver.find_elements(By.XPATH,'//*[@class = "restaurant__image"]//*')
+            txt = Image_info[1].get_attribute("style")
+        except:
+            Image_info = self.driver.find_elements(By.XPATH,'//*[@class = "MenuHeader-cf659db292cfad50"]/*')
+            txt = Image_info[0].get_attribute("style")
         src = txt.split('"') #Only need the url so the code splits string at ". 
         url = src[1]
         name = Scraper.sorteddata['Name']
