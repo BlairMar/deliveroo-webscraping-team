@@ -123,7 +123,7 @@ class Scraper:
         This function calls private members of the scrape class and returns data on restaurants on deliveroo.
         
         Returns:
-        Dictionary of scraped data and a jpg of the restaurant.
+        Dictionary of scraped data and jpgs of the restaurants.
         """
         self.__accept_cookies()
         self.__enter_address(self.address)
