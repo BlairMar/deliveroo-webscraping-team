@@ -112,8 +112,11 @@ class Scraper:
         name = Scraper.sorteddata['Name']
         path = f'{name}.jpg' 
         image = requests.get(url).content
-        with open(path, 'wb') as handler:
-            handler.write(image)
+        try:
+            with open(path, 'wb') as handler:
+                handler.write(image)
+        except:
+            print('Unable to save restaurant image')
         Scraper.sorteddata['Url'] = url
         return Scraper.sorteddata    
 
