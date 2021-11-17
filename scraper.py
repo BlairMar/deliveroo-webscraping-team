@@ -133,3 +133,6 @@ class Scraper:
             self.driver.switch_to.window(self.driver.window_handles[0])
             time.sleep(5)
             self.__get_summary()
+    
+    def save_data_output(self):
+        self.__get_picture()
