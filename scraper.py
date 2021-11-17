@@ -1,13 +1,22 @@
 
+#%%
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
 import time
 
 class Scraper:
-  
+    """
+    This class is used to scrape data from Deliveroo.
+    
+    Attributes:
+    Address (string): The postcode of the area of restaurants to be scraped. 
+    """
     sorteddata ={}
     def __init__(self, address: str) -> None:
+        """
+        See help(Scraper) for accurate signature.
+        """
         self.driver = webdriver.Chrome()
         self.driver.get('https://deliveroo.co.uk')
         self.sort_options = {
@@ -121,6 +130,12 @@ class Scraper:
         return Scraper.sorteddata    
 
     def scrape(self):
+        """
+        This function calls private members of the scrape class and returns data on restaurants on deliveroo.
+        
+        Returns:
+        Dictionary of scraped data and jpgs of the restaurants.
+        """
         self.__accept_cookies()
         self.__enter_address(self.address)
         self.__acknowledge_14_delivery()
@@ -133,3 +148,7 @@ class Scraper:
             self.driver.switch_to.window(self.driver.window_handles[0])
             time.sleep(5)
             self.__get_summary()
+# %%
+
+help(Scraper)
+# %%
