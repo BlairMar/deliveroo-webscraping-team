@@ -45,20 +45,20 @@ class Scraper:
             pass
              
     def __sort_page(self, option: str='Top_rated'):
-        if option not in self.sort_options:
+        sort_options = {
+            'Distance': 0,
+            'Hygiene_ratings': 1,
+            'Recommended': 2,
+            'Time': 3,
+            'Top_rated': 4
+        }
+        if option not in sort_options:
             raise ValueError("Option does not exist")
         try:
             self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/button').click()
             filter_list = self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/div/ul')
             
-            sort_options = {
-                'Distance': 0,
-                'Hygiene_ratings': 1,
-                'Recommended': 2,
-                'Time': 3,
-                'Top_rated': 4
-            }
-            filter_list.find_elements(By.XPATH, './li/label/input')[self.sort_options[option]].click()
+            filter_list.find_elements(By.XPATH, './li/label/input')[sort_options[option]].click()
         except:
             pass
         
@@ -96,7 +96,7 @@ class Scraper:
             image = image_container.find_element(By.XPATH, './div/div/div')
         except:
             # Image on the left side of the page and description on the right
-            container = self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div/div/div[2]')
+            container = self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div/div')
             subcontainers = container.find_elements(By.XPATH, './div')
             image_container = subcontainers[0]
             header = subcontainers[1]
