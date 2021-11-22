@@ -178,8 +178,11 @@ class Scraper:
             self.driver.execute_script(f"window.open('{url}', '_blank');")
             self.driver.close()
             self.driver.switch_to.window(self.driver.window_handles[0])
-            data = self.__get_summary()
-            data['uuid'] = uuid4()
-            data['url'] = url
-            restaurants.append(data)
+            try:
+                data = self.__get_summary()
+                data['uuid'] = uuid4()
+                data['url'] = url
+                restaurants.append(data)
+            except:
+                print('Unable to scrape restaurant page')
         return restaurants
