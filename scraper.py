@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
 import time
+import os
 
 class Scraper:
   
@@ -95,7 +96,12 @@ class Scraper:
                 upper_bound = rawdata.index(item)
                 Scraper.sorteddata['Address'] = rawdata[upper_bound - 1]
                 upper_bound -= 2 # setting upper bound to 2 elements before view map appears. 
-        Scraper.sorteddata['Tags'] = [item for item in rawdata[lower_bound:upper_bound]]   
+        Scraper.sorteddata['Tags'] = [item for item in rawdata[lower_bound:upper_bound]]  
+        # restaurant_folder = 
+        # if os.path.isdir(restaurant_folder):
+        #     pass
+        # else:
+        #     os.makedirs(restaurant_folder) 
         self.__get_picture()
         print(Scraper.sorteddata)
         return Scraper.sorteddata #defined as a global variable. 
@@ -111,9 +117,15 @@ class Scraper:
         url = src[1]
         name = Scraper.sorteddata['Name']
         path = f'{name}.jpg' 
+        product_folder = f'Images_{name}'
+        if os.path.isdir(product_folder):
+            pass
+        else:
+            os.makedirs(product_folder)
+        
         image = requests.get(url).content
         try:
-            with open(path, 'wb') as handler:
+            with open(f'{product_folder}/{path}', 'wb') as handler:
                 handler.write(image)
         except:
             print('Unable to save restaurant image')
