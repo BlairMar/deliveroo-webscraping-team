@@ -9,6 +9,7 @@ from uuid import uuid4
 import requests
 import time
 import os
+import json
 
 class Scraper:
     """
@@ -189,14 +190,16 @@ class Scraper:
             self.driver.switch_to.window(self.driver.window_handles[0])
             try:
                 data = self.__get_summary()
-                data['uuid'] = uuid4()
+                data['uuid'] = str(uuid4())
                 data['url'] = url
                 restaurants.append(data)
             except:
                 print('Unable to scrape restaurant page')
+        
+        with open(f'{self.dataoutput}/data.json', 'w') as outfile:
+            json.dump(restaurants, outfile)
+
         return restaurants
-
-
 
 
     
