@@ -1,5 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 from uuid import uuid4
 
 import requests
@@ -16,21 +20,25 @@ class Scraper:
         """
         See help(Scraper) for accurate signature.
         """
-        self.driver = webdriver.Chrome()
+        options = Options()
+        # options.headless = True
+        self.driver = webdriver.Chrome(options=options)
         self.driver.get('https://deliveroo.co.uk')
         self.address = address
 
     def __accept_cookies(self):
-        time.sleep(1.5)   ##could have a shorter sleep time
-        self.driver.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]').click()
+        WebDriverWait(self.driver, 1.5).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
+        ).click()
 
     def __enter_address(self, address):
         self.addressbar = self.driver.find_element(By.XPATH, '//*[@id="location-search"]')
         self.addressbar.send_keys(f'{address}')
         self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div[2]/div[3]/div/div[1]/div/div[2]/div/div/div/div/div/div[2]/span/button').click()
-        time.sleep(1)
         try:
-            self.driver.find_element(By.XPATH, '/html/body/div[10]/div/div/div/div[2]/div/span/button').click() 
+            WebDriverWait(self.driver, 1).until(
+                EC.element_to_be_clickable((By.XPATH, '//*[@id="__next"]/div/div/div[2]/div[2]/div[3]/div/div[1]/div/div[2]/div/div/div/div/div/div[2]/span/button'))
+            ).click()
         except:  #if map location does not show 
             pass
         
@@ -40,7 +48,6 @@ class Scraper:
         time.sleep(1.5)
         try:
             self.driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
-            
         except:
             pass
              
@@ -55,7 +62,9 @@ class Scraper:
         if option not in sort_options:
             raise ValueError("Option does not exist")
         try:
-            self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/button').click()
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/button'))
+            ).click()
             filter_list = self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/div/ul')
             
             filter_list.find_elements(By.XPATH, './li/label/input')[sort_options[option]].click()
@@ -63,7 +72,12 @@ class Scraper:
             pass
         
     def __collect_restaurants(self, limit: int=None):
-        res_menu = self.driver.find_element(By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul')
+        try:
+            res_menu = WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located((By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul'))
+            )
+        except:
+            return []
         res_list = res_menu.find_elements(By.TAG_NAME,'li')
         urls = []
         for res in res_list:
@@ -82,7 +96,9 @@ class Scraper:
         data = {}
         try:
             # Image on the right side of the page and description on the left
-            container = self.driver.find_element(By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div')
+            container = WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="app-element"]/div/div[2]/div[1]/div[2]/div'))
+            )
             subcontainers = container.find_elements(By.XPATH, './div')
             header = subcontainers[0].find_element(By.XPATH, './div')
             image_container = subcontainers[1]
@@ -96,7 +112,9 @@ class Scraper:
             image = image_container.find_element(By.XPATH, './div/div/div')
         except:
             # Image on the left side of the page and description on the right
-            container = self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div/div')
+            container = WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div/div'))
+            )
             subcontainers = container.find_elements(By.XPATH, './div')
             image_container = subcontainers[0]
             header = subcontainers[1]
@@ -153,14 +171,13 @@ class Scraper:
         self.__enter_address(self.address)
         self.__acknowledge_popups()
         self.__sort_page()
-        time.sleep(5)
+        time.sleep(2)
         urls = self.__collect_restaurants(2)
         restaurants = []
         for (name, url) in urls:
             self.driver.execute_script(f"window.open('{url}', '_blank');")
             self.driver.close()
             self.driver.switch_to.window(self.driver.window_handles[0])
-            time.sleep(5)
             data = self.__get_summary()
             data['uuid'] = uuid4()
             data['url'] = url
