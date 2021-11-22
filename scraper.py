@@ -34,7 +34,7 @@ class Scraper:
         self.driver.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]').click()
         return
 
-    def __enter_address(self, address):
+    def _enter_address(self, address):
         self.addressbar = self.driver.find_element(By.XPATH, '//*[@id="location-search"]')
         self.addressbar.send_keys(f'{address}')
         self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div[2]/div[3]/div/div[1]/div/div[2]/div/div/div/div/div/div[2]/span/button').click()
@@ -67,7 +67,7 @@ class Scraper:
         except:
             pass
         
-    def __collect_restaurants(self, limit: int=None):
+    def _collect_restaurants(self, limit: int=None):
         res_menu = self.driver.find_element(By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul')
         res_list = res_menu.find_elements(By.TAG_NAME,'li')
         urls = []
@@ -138,8 +138,8 @@ class Scraper:
         Returns:
         Dictionary of scraped data and jpgs of the restaurants.
         """
-        self.__accept_cookies()
-        self.__enter_address(self.address)
+        self._accept_cookies()
+        self._enter_address(self.address)
         self.__acknowledge_14_delivery()
         self.__sort_page()
         time.sleep(5)
