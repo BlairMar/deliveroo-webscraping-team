@@ -8,6 +8,8 @@ from uuid import uuid4
 
 import requests
 import time
+import os
+import json
 
 class Scraper:
     """
@@ -25,11 +27,18 @@ class Scraper:
         self.driver = webdriver.Chrome(options=options)
         self.driver.get('https://deliveroo.co.uk')
         self.address = address
+        self.dataoutput = f'data/{address}'
 
     def __accept_cookies(self):
         WebDriverWait(self.driver, 1.5).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
         ).click()
+
+    def __address_folder(self):
+        if os.path.isdir(f'{self.dataoutput}/images'):
+            pass
+        else:
+            os.makedirs(f'{self.dataoutput}/images')
 
     def __enter_address(self, address):
         self.addressbar = self.driver.find_element(By.XPATH, '//*[@id="location-search"]')
@@ -136,7 +145,7 @@ class Scraper:
         data['name'] = header.find_element(By.TAG_NAME, 'h1').text
         
         url = self.__get_picture_url(image)
-        path = f'{str(uuid4())}.jpg'
+        path = f'{self.dataoutput}/images/{str(uuid4())}.jpg'
         data['image_path'] = path
         self.__save_image(url, path)
         
@@ -171,6 +180,7 @@ class Scraper:
         Returns:
         Dictionary of scraped data and jpgs of the restaurants.
         """
+        self.__address_folder()
         self.__accept_cookies()
         self.__enter_address(self.address)
         self.__acknowledge_popups()
@@ -184,9 +194,16 @@ class Scraper:
             self.driver.switch_to.window(self.driver.window_handles[0])
             try:
                 data = self.__get_summary()
-                data['uuid'] = uuid4()
+                data['uuid'] = str(uuid4())
                 data['url'] = url
                 restaurants.append(data)
             except:
                 print('Unable to scrape restaurant page')
+        
+        with open(f'{self.dataoutput}/data.json', 'w') as outfile:
+            json.dump(restaurants, outfile)
+
         return restaurants
+
+
+    
