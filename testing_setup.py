@@ -27,8 +27,9 @@ class ScraperTestCase(unittest.TestCase):
     # def test_scrape(self):
     #     self.test1.scrape()
     #     dictionary = self.test1.sorteddata
-    #     self.assertIsNotNone(dictionary)
-    
+    # assertIn(some_key, some_dict)
+    # assertIn(some_key, some_dict.keys())
+        
     def tearDown(self):
         self.test1.driver.quit()
 
