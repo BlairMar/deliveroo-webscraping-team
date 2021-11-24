@@ -51,7 +51,11 @@ class Scraper:
             self.driver.find_element(By.XPATH,'/html/body/div[8]/div/div/div/div/div/div[2]/span[2]/button').click()
         except:
             pass
-             
+        try:
+            self.driver.find_element(By.XPATH,'/html/body/div[9]/div/div/div/div/div/div[2]/span[2]/button').click()
+        except:
+            pass
+            
     def __sort_page(self, option: str='Top_rated'):
         sort_options = {
             'Distance': 0,
