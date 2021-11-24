@@ -72,7 +72,7 @@ class Scraper:
         except:
             pass
         
-    def __collect_restaurants(self, limit: int=None):
+    def _collect_restaurants(self, limit: int=None):
         try:
             res_menu = WebDriverWait(self.driver, 5).until(
                 EC.visibility_of_element_located((By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul'))
@@ -93,7 +93,7 @@ class Scraper:
                 pass
         return urls
 
-    def __get_summary(self):
+    def _get_summary(self):
         data = {}
         try:
             # Image on the right side of the page and description on the left
