@@ -29,6 +29,12 @@ class ScraperTestCase(unittest.TestCase):
     #     dictionary = self.test1.sorteddata
     # assertIn(some_key, some_dict)
     # assertIn(some_key, some_dict.keys())
+    #def test_get_summary(self):
+
+    def test_collect_restaurants(self):
+        
+
+
         
     def tearDown(self):
         self.test1.driver.quit()
