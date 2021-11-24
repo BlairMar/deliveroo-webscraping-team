@@ -2,6 +2,7 @@
 
 import unittest
 from scraper import Scraper
+import time
 
 #%%
 
@@ -18,10 +19,15 @@ class ScraperTestCase(unittest.TestCase):
         self.assertIsNone(self.test1._accept_cookies())
 
     def test_address_input(self):
+        self.test1._accept_cookies()
         self.test1._enter_address(self.address)
         self.test1.driver.get(self.restaurant_url)
-        self.assertIn("restaurants", self.test1.driver.title)
-
+        self.assertIn("delivery", self.test1.driver.title)
+    
+    def test_address_folders(self):
+        directory_path =f'data/{self.address}/images'
+        self.test1._address_folder()
+        self.assertTrue(os.path.exists(directory_path))
         # self.assertFalse(None)
 
     # def test_scrape(self):
