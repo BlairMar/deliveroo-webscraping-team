@@ -1,6 +1,8 @@
 #%%
 
 import unittest
+
+from selenium import webdriver
 from scraper import Scraper
 import time
 
@@ -14,6 +16,8 @@ class ScraperTestCase(unittest.TestCase):
         self.handle = open('scraper.py')
         self.address = 'LS12 5NJ'
         self.test1 = Scraper(self.address)
+        #self.driver = webdriver.Chrome()
+        self.driver.get('https://deliveroo.co.uk')
 
     def test_cookies_clicker(self):
         self.assertIsNone(self.test1._accept_cookies())
@@ -38,12 +42,13 @@ class ScraperTestCase(unittest.TestCase):
     #def test_get_summary(self):
 
     def test_collect_restaurants(self):
-        
+
 
 
         
     def tearDown(self):
         self.test1.driver.quit()
+        #self.driver.close()
 
 unittest.main(argv=[''], verbosity=2, exit=False)
 
