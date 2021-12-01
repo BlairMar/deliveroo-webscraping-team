@@ -52,7 +52,7 @@ class Scraper:
             pass
         
     
-    def __acknowledge_popups(self):
+    def _acknowledge_popups(self):
         # find the "Ok" button in acknowledgement pop ups
         time.sleep(1.5)
         try:
@@ -64,7 +64,7 @@ class Scraper:
         except:
             pass
             
-    def __sort_page(self, option: str='Top_rated'):
+    def _sort_page(self, option: str='Top_rated'):
         sort_options = {
             'Distance': 0,
             'Hygiene_ratings': 1,
@@ -180,20 +180,20 @@ class Scraper:
         Returns:
         Dictionary of scraped data and jpgs of the restaurants.
         """
-        self.__address_folder()
-        self.__accept_cookies()
-        self.__enter_address(self.address)
-        self.__acknowledge_popups()
-        self.__sort_page()
+        self._address_folder()
+        self._accept_cookies()
+        self._enter_address(self.address)
+        self._acknowledge_popups()
+        self._sort_page()
         time.sleep(2)
-        urls = self.__collect_restaurants(2)
+        urls = self._collect_restaurants(2)
         restaurants = []
         for (name, url) in urls:
             self.driver.execute_script(f"window.open('{url}', '_blank');")
             self.driver.close()
             self.driver.switch_to.window(self.driver.window_handles[0])
             try:
-                data = self.__get_summary()
+                data = self._get_summary()
                 data['uuid'] = str(uuid4())
                 data['url'] = url
                 restaurants.append(data)
