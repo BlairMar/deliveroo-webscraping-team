@@ -1,5 +1,6 @@
 #%%
 
+from typing import Collection
 import unittest
 
 from selenium import webdriver
@@ -18,6 +19,7 @@ class ScraperTestCase(unittest.TestCase):
         self.test1 = Scraper(self.address)
         #self.driver = webdriver.Chrome()
         self.driver.get('https://deliveroo.co.uk')
+        
 
     def test_cookies_clicker(self):
         self.assertIsNone(self.test1._accept_cookies())
@@ -42,6 +44,9 @@ class ScraperTestCase(unittest.TestCase):
     #def test_get_summary(self):
 
     def test_collect_restaurants(self):
+        self.test1.scrape()
+        collect_url = self.test1.collect_restaurants('https://deliveroo.co.uk/menu/')
+        self.assertEqual('https://deliveroo.co.uk/menu/',self.urls)
         print("This is a test on the sucessful collection")
 
 
