@@ -147,9 +147,22 @@ class Scraper:
         url = self.__get_picture_url(image)
         path = f'{self.dataoutput}/images/{str(uuid4())}.jpg'
         data['image_path'] = path
-        self.__save_image(url, path)
-        
-        return data
+
+        if self._duplication_check(data) == True:
+            pass
+        else:
+            self.__save_image(url, path)
+            return data
+    
+    def _duplication_check(self, data):
+        with open (f'{self.dataoutput}/data.json', 'r') as file:
+            existing_data = json.load(file)
+        if str(data['name']) in existing_data.__str__():
+            print('True')
+            return True
+        else:
+            print('False')
+            return False
     
     def __save_image(self, url: str, path: str):
         image = requests.get(url).content
