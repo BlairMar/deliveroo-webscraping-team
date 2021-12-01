@@ -51,10 +51,9 @@ class Scraper:
         except:  #if map location does not show 
             pass
         try:
-            WebDriverWait(self.driver, 1).until(
-                EC.element_to_be_selected((By.XPATH, '//*[@id="modal-header-title"]/span'))
+            WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div/div[1]/div/div/div/div/a'))
             )
-        
         except:
             raise ValueError('Sorry! Deliveroo does not operate in this area, try a different address!')
         
