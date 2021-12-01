@@ -42,6 +42,7 @@ class ScraperTestCase(unittest.TestCase):
     #def test_get_summary(self):
 
     def test_collect_restaurants(self):
+        print("This is a test on the sucessful collection")
 
 
 
