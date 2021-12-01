@@ -173,7 +173,7 @@ class Scraper:
         url = url.replace('url("', '').replace('")', '')
         return url
 
-    def scrape(self):
+    def scrape(self, num):
         """
         This function calls private members of the scrape class and returns data on restaurants on deliveroo.
         
@@ -186,22 +186,26 @@ class Scraper:
         self.__acknowledge_popups()
         self.__sort_page()
         time.sleep(2)
-        urls = self.__collect_restaurants(2)
+        urls = self.__collect_restaurants(num)
         restaurants = []
         for (name, url) in urls:
-            self.driver.execute_script(f"window.open('{url}', '_blank');")
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])
+            print(url)
             try:
-                data = self.__get_summary()
-                data['uuid'] = str(uuid4())
-                data['url'] = url
-                restaurants.append(data)
+                self.driver.execute_script(f"window.open('{url}', '_blank');")
+                self.driver.close()
+                self.driver.switch_to.window(self.driver.window_handles[0])
+                try:
+                    data = self.__get_summary()
+                    data['uuid'] = str(uuid4())
+                    data['url'] = url
+                    restaurants.append(data)
+                except:
+                    print('Unable to scrape restaurant page')
             except:
                 print('Unable to scrape restaurant page')
         
         with open(f'{self.dataoutput}/data.json', 'w') as outfile:
-            json.dump(restaurants, outfile,indent=2)
+            json.dump(restaurants, outfile, indent=2)
 
         return restaurants
 
