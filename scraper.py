@@ -215,9 +215,9 @@ class Scraper:
                     data['url'] = url
                     restaurants.append(data)
                 except:
-                    print('Unable to scrape restaurant page')
+                    print(f'Unable to scrape restaurant page {url}')
             except:
-                print('Unable to scrape restaurant page')
+                print(f'Unable to open tab {url}')
         
         with open(f'{self.dataoutput}/data.json', 'w') as outfile:
             json.dump(restaurants, outfile, indent=2)
