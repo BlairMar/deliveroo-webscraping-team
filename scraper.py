@@ -29,6 +29,14 @@ class Scraper:
         self.address = address
         self.dataoutput = f'data/{address}'
 
+    def __load_data_if_exists(self):
+        if os.path.isfile(f'{self.dataoutput}/data.json'):
+            with open (f'{self.dataoutput}/data.json', 'r') as file:
+                existing_data = json.load(file)
+            return existing_data
+        else:
+            return []
+    
     def __accept_cookies(self):
         WebDriverWait(self.driver, 1.5).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
@@ -156,7 +164,7 @@ class Scraper:
         self.__save_image(url, path)
         
         return data
-    
+
     def __save_image(self, url: str, path: str):
         image = requests.get(url).content
         with open(path,'wb') as f:
@@ -193,9 +201,10 @@ class Scraper:
         self.__sort_page()
         time.sleep(2)
         urls = self.__collect_restaurants(num)
-        restaurants = []
+        restaurants = self.__load_data_if_exists()
         for (name, url) in urls:
-            print(url)
+            if url in restaurants.__str__():
+                continue
             try:
                 self.driver.execute_script(f"window.open('{url}', '_blank');")
                 self.driver.close()
