@@ -197,7 +197,7 @@ class Scraper:
         urls = self.__collect_restaurants(num)
         restaurants = self.__load_data_if_exists()
         for (name, url) in urls:
-            if True in [name in restaurant['name'] for restaurant in restaurants]:
+            if url in restaurants.__str__():
                 continue
             try:
                 self.driver.execute_script(f"window.open('{url}', '_blank');")
@@ -213,7 +213,7 @@ class Scraper:
             except:
                 print('Unable to scrape restaurant page')
         
-        with open(f'{self.dataoutput}/data.json', 'a') as outfile:
+        with open(f'{self.dataoutput}/data.json', 'w') as outfile:
             json.dump(restaurants, outfile, indent=2)
 
         return restaurants
