@@ -50,6 +50,12 @@ class Scraper:
             ).click()
         except:  #if map location does not show 
             pass
+        try:
+            WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div/div[1]/div/div/div/div/a'))
+            )
+        except:
+            raise ValueError('Sorry! Deliveroo does not operate in this area, try a different address!')
         
     
     def __acknowledge_popups(self):
@@ -180,9 +186,9 @@ class Scraper:
         Returns:
         Dictionary of scraped data and jpgs of the restaurants.
         """
-        self.__address_folder()
         self.__accept_cookies()
         self.__enter_address(self.address)
+        self.__address_folder()
         self.__acknowledge_popups()
         self.__sort_page()
         time.sleep(2)
