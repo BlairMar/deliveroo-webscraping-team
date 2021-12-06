@@ -29,6 +29,14 @@ class Scraper:
         self.address = address
         self.dataoutput = f'data/{address}'
 
+    def __load_data_if_exists(self):
+        if os.path.isfile(f'{self.dataoutput}/data.json'):
+            with open (f'{self.dataoutput}/data.json', 'r') as file:
+                existing_data = json.load(file)
+            return existing_data
+        else:
+            return []
+    
     def __accept_cookies(self):
         WebDriverWait(self.driver, 1.5).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
@@ -147,27 +155,10 @@ class Scraper:
         url = self.__get_picture_url(image)
         path = f'{self.dataoutput}/images/{str(uuid4())}.jpg'
         data['image_path'] = path
+        self.__save_image(url, path)
         
-        if self._duplication_check(data) == True:
-            pass
-        else:
-            self.__save_image(url, path)
-            return data
-    
-    def _duplication_check(self, data):
-        if os.path.isfile(f'{self.dataoutput}/data.json'):
-            with open (f'{self.dataoutput}/data.json', 'r') as file:
-                existing_data = json.load(file)
-            if str(data['name']) in existing_data.__str__():
-                print('True')
-                return True
-            else:
-                print('False1')
-                return False
-        else:
-            print('False2')
-            return False
-    
+        return data
+
     def __save_image(self, url: str, path: str):
         image = requests.get(url).content
         with open(path,'wb') as f:
@@ -204,9 +195,10 @@ class Scraper:
         self.__sort_page()
         time.sleep(2)
         urls = self.__collect_restaurants(num)
-        restaurants = []
+        restaurants = self.__load_data_if_exists()
         for (name, url) in urls:
-            print(url)
+            if True in [name in restaurant['name'] for restaurant in restaurants]:
+                continue
             try:
                 self.driver.execute_script(f"window.open('{url}', '_blank');")
                 self.driver.close()
