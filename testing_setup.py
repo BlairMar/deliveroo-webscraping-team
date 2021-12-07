@@ -35,16 +35,16 @@ class ScraperTestCase(unittest.TestCase):
         # self.driver.get('https://deliveroo.co.uk')
     
 
-    def test_cookies_clicker(self):
+    def test01_cookies_clicker(self):
         self.assertIsNone(self.test1._accept_cookies())
 
-    def test_address_input(self):
+    def test02_address_input(self):
         self.test1._accept_cookies()
         self.test1._enter_address(self.address)
         # self.test1.driver.get(self.restaurant_url)
         self.assertIn("Deliveroo", self.test1.driver.title)
     
-    def test_address_folders(self):
+    def test03_address_folders(self):
         directory_path =f'data/{self.address}/images'
         self.test1._address_folder()
         self.assertTrue(os.path.exists(directory_path))
@@ -63,6 +63,12 @@ class ScraperTestCase(unittest.TestCase):
         print(collect_url)
         # self.assertEqual(collect_url, self.urls)
         # print("This is a test on the sucessful collection")
+
+    def test_delete_data():
+        print("delete data")
+
+    def test_delete_images():
+        print("deletes images")
 
 
 
