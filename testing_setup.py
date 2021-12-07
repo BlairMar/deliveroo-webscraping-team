@@ -7,16 +7,17 @@ from selenium import webdriver
 from scraper import Scraper
 import time
 import os
+from selenium.webdriver.common.by import By
 
 #%%
-test1 = Scraper('LS12 5NJ')
-test1._accept_cookies()
-test1._enter_address('LS12 5NJ')
-test1._acknowledge_popups()
-test1._sort_page()
-test1._collect_restaurants()
-for i, url in enumerate(test1._collect_restaurants()):
-    if 
+# test1 = Scraper('LS12 5NJ')
+# test1._accept_cookies()
+# test1._enter_address('LS12 5NJ')
+# test1._acknowledge_popups()
+# test1._sort_page()
+# test1._collect_restaurants()
+# for i, url in enumerate(test1._collect_restaurants()):
+#     if 
 
 
 
@@ -35,16 +36,20 @@ class ScraperTestCase(unittest.TestCase):
         # self.driver.get('https://deliveroo.co.uk')
     
 
-    def test_cookies_clicker(self):
-        self.assertIsNone(self.test1._accept_cookies())
-
-    def test_address_input(self):
+    def test01_cookies_clicker(self):
+        try:
+            self.test1._accept_cookies()
+        except:
+            self.fail("_accept_cookies raised an error")
+    
+    def test02_address_input(self):
         self.test1._accept_cookies()
         self.test1._enter_address(self.address)
         # self.test1.driver.get(self.restaurant_url)
-        self.assertIn("Deliveroo", self.test1.driver.title)
+        title = self.test1.driver.find_element(By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/div/div/div/div/h3')
+        self.assertIn("Farnley and New Farnley", title.text)
     
-    def test_address_folders(self):
+    def test03_address_folders(self):
         directory_path =f'data/{self.address}/images'
         self.test1._address_folder()
         self.assertTrue(os.path.exists(directory_path))
@@ -57,12 +62,12 @@ class ScraperTestCase(unittest.TestCase):
     # assertIn(some_key, some_dict.keys())
     #def test_get_summary(self):
 
-    def test_collect_restaurants(self):
-        self.test1.scrape()
-        collect_url = self.test1._collect_restaurants('https://deliveroo.co.uk/menu/')
-        print(collect_url)
-        # self.assertEqual(collect_url, self.urls)
-        # print("This is a test on the sucessful collection")
+    # def test04_collect_restaurants(self):
+    #     self.test1.scrape()
+    #     collect_url = self.test1._collect_restaurants('https://deliveroo.co.uk/menu/')
+    #     print(collect_url)
+    #     # self.assertEqual(collect_url, self.urls)
+    #     # print("This is a test on the sucessful collection")
 
 
 
