@@ -29,7 +29,15 @@ class Scraper:
         self.address = address
         self.dataoutput = f'data/{address}'
 
-    def _accept_cookies(self):
+    def __load_data_if_exists(self):
+        if os.path.isfile(f'{self.dataoutput}/data.json'):
+            with open (f'{self.dataoutput}/data.json', 'r') as file:
+                existing_data = json.load(file)
+            return existing_data
+        else:
+            return []
+    
+    def __accept_cookies(self):
         WebDriverWait(self.driver, 1.5).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
         ).click()
@@ -50,6 +58,12 @@ class Scraper:
             ).click()
         except:  #if map location does not show 
             pass
+        try:
+            WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div/div[1]/div/div/div/div/a'))
+            )
+        except:
+            raise ValueError('Sorry! Deliveroo does not operate in this area, try a different address!')
         
     
     def _acknowledge_popups(self):
@@ -150,7 +164,7 @@ class Scraper:
         self.__save_image(url, path)
         
         return data
-    
+
     def __save_image(self, url: str, path: str):
         image = requests.get(url).content
         with open(path,'wb') as f:
@@ -173,35 +187,40 @@ class Scraper:
         url = url.replace('url("', '').replace('")', '')
         return url
 
-    def scrape(self):
+    def scrape(self, num):
         """
         This function calls private members of the scrape class and returns data on restaurants on deliveroo.
         
         Returns:
         Dictionary of scraped data and jpgs of the restaurants.
         """
-        self._address_folder()
-        self._accept_cookies()
-        self._enter_address(self.address)
-        self._acknowledge_popups()
-        self._sort_page()
+        self.__accept_cookies()
+        self.__enter_address(self.address)
+        self.__address_folder()
+        self.__acknowledge_popups()
+        self.__sort_page()
         time.sleep(2)
-        urls = self._collect_restaurants(2)
-        restaurants = []
+        urls = self.__collect_restaurants(num)
+        restaurants = self.__load_data_if_exists()
         for (name, url) in urls:
-            self.driver.execute_script(f"window.open('{url}', '_blank');")
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])
+            if url in restaurants.__str__():
+                continue
             try:
-                data = self._get_summary()
-                data['uuid'] = str(uuid4())
-                data['url'] = url
-                restaurants.append(data)
+                self.driver.execute_script(f"window.open('{url}', '_blank');")
+                self.driver.close()
+                self.driver.switch_to.window(self.driver.window_handles[0])
+                try:
+                    data = self.__get_summary()
+                    data['uuid'] = str(uuid4())
+                    data['url'] = url
+                    restaurants.append(data)
+                except:
+                    print(f'Unable to scrape restaurant page {url}')
             except:
-                print('Unable to scrape restaurant page')
+                print(f'Unable to open tab {url}')
         
         with open(f'{self.dataoutput}/data.json', 'w') as outfile:
-            json.dump(restaurants, outfile)
+            json.dump(restaurants, outfile, indent=2)
 
         return restaurants
 
