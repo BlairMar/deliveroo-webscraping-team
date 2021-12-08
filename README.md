@@ -6,6 +6,12 @@ python main.py
 ```
 It also contains interactive cells if you wish to rerun the scraper without opening a new instance of the browser.
 
+## Testing
+to run all the tests:
+```bash
+chmod +x run_tests.sh
+./run_tests.sh
+```
 ## Pushing updates
 
 To fix a bug or add a new feature (basically any updates), follow the steps:

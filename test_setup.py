@@ -31,7 +31,7 @@ class ScraperSetupTestCase(unittest.TestCase):
         self.assertIn("Farnley and New Farnley", title.text)
     
     def test03_address_folders(self):
-        directory_path =f'data/{self.address}/images'
+        directory_path = f'data/{self.address}/images'
         self.test1._address_folder()
         self.assertTrue(os.path.exists(directory_path))
 
@@ -45,7 +45,7 @@ class ScraperSetupTestCase(unittest.TestCase):
         self.test1.driver.quit()
         # TODO: Delete 'data' folder
 
-unittest.main(argv=[''], verbosity=2, exit=False)
+# unittest.main(argv=[''], verbosity=2, exit=False)
 
 
 # %%
