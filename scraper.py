@@ -207,9 +207,7 @@ class Scraper:
             if url in restaurants.__str__():
                 continue
             try:
-                self.driver.execute_script(f"window.open('{url}', '_blank');")
-                self.driver.close()
-                self.driver.switch_to.window(self.driver.window_handles[0])
+                self.driver.get(url)
                 try:
                     data = self.__get_summary()
                     data['uuid'] = str(uuid4())
@@ -218,7 +216,7 @@ class Scraper:
                 except:
                     print(f'Unable to scrape restaurant page {url}')
             except:
-                print(f'Unable to open tab {url}')
+                print(f'Unable to open page {url}')
         
         with open(f'{self.dataoutput}/data.json', 'w') as outfile:
             json.dump(restaurants, outfile, indent=2)
