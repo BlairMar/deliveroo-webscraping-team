@@ -7,7 +7,7 @@ python main.py
 It also contains interactive cells if you wish to rerun the scraper without opening a new instance of the browser.
 
 ## Testing
-to run all the tests:
+to run all the tests, edit `run_tests.sh` to replace `python3` with your python version e.g. `python3.8`, then run the following:
 ```bash
 chmod +x run_tests.sh
 ./run_tests.sh
