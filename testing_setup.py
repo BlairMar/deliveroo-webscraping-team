@@ -24,7 +24,7 @@ from selenium.webdriver.common.by import By
 #%%
 
 
-class ScraperTestCase(unittest.TestCase):
+class ScraperSetupTestCase(unittest.TestCase):
 
     # restaurant_url = 'https://deliveroo.co.uk/restaurants/'
 
@@ -45,6 +45,7 @@ class ScraperTestCase(unittest.TestCase):
     def test02_address_input(self):
         self.test1._accept_cookies()
         self.test1._enter_address(self.address)
+        time.sleep(2)
         # self.test1.driver.get(self.restaurant_url)
         title = self.test1.driver.find_element(By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/div/div/div/div/h3')
         self.assertIn("Farnley and New Farnley", title.text)
@@ -62,25 +63,33 @@ class ScraperTestCase(unittest.TestCase):
     # assertIn(some_key, some_dict.keys())
     #def test_get_summary(self):
 
-    # def test04_collect_restaurants(self):
-    #     self.test1.scrape()
-    #     collect_url = self.test1._collect_restaurants('https://deliveroo.co.uk/menu/')
-    #     print(collect_url)
-    #     # self.assertEqual(collect_url, self.urls)
+    def test04_collect_restaurants(self):
+        self.test1.driver.get('https://deliveroo.co.uk/restaurants/leeds/farnley-and-new-farnley?geohash=gcwcgwestutx&sort=rating')
+        self.test1._accept_cookies()
+        collect_url = self.test1._collect_restaurants(10)
+        self.assertEqual(len(collect_url), 10)
+    
+        
+        # self.assertEqual(collect_url, self.urls)
     #     # print("This is a test on the sucessful collection")
 
-    def test_delete_data():
-        print("delete data")
-
-    def test_delete_images():
-        print("deletes images")
-
-
+    def test05_get_summary(self):
+    #TODO: check get summary does not raise an error and out of dictionary isnt empty.
+        self.test1.driver.get('https://deliveroo.co.uk/menu/leeds/central-beeston/nisa-beeston?day=today&geohash=gcwcgwestuxg&time=ASAP')
+        self.test1._accept_cookies()
+        get_summary_data = self.test1._get_summary()
+        if self.assertEqual(len(get_summary_data), 0):
+            print("Empty")
+        else:
+            print("All good")    
+        #if self.assertFalse(len(get_summary_data),0):
+            #raise ValueError
+        #pass
 
         
     def tearDown(self):
         self.test1.driver.quit()
-        #self.driver.close()
+        # TODO: Delete 'data' folder
 
 unittest.main(argv=[''], verbosity=2, exit=False)
 
