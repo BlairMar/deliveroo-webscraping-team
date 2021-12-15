@@ -8,7 +8,7 @@ DATABASE_TYPE = 'postgresql'
 DBAPI = 'psycopg2'
 HOST = 'localhost'
 USER = 'postgres'
-PASSWORD = 'FzA2609042102Ege'
+PASSWORD = 'Password'
 DATABASE = 'DeliverooScrape'
 PORT = 5432
 
