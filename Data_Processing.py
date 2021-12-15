@@ -17,49 +17,57 @@ address = 'BS1 4ER'
 df = pd.read_json(f'data/{address}/data.json')
 df.columns = ['tags', 'name', 'image_path','uuid', 'url', 'rating']
 
-
-def my_func(my_list):
+def list_to_string(my_list):
     if not my_list:
         return None
     else:
         return my_list[0]
 
-pd.options.mode.chained_assignment = None
+#pd.options.mode.chained_assignment = None
 
-rating = [my_func([strings for strings in tags if 'Excellent' in strings or 'Very good' in strings]) for tags in df['tags']]
-# [df["rating"].fillna(rat, inplace=True) 
-# #   for rat in rating for tags in df['tags']if rat in tags]
-[tags.remove(rat) for rat in rating for tags in df['tags'] if rat in tags]
+def list_of_items_by_word(string_1, string_2='ignore', string_3='ignore'):
+    
+    lis = [list_to_string([strings for strings in tags if 
+    string_1 in strings or string_2 in strings or string_3 in strings]) 
+    for tags in df['tags']]
+    remove_from_tags_by_list(lis)    
+    return lis    
+
+def remove_from_tags_by_list(list_1):
+    [tags.remove(val) for val in list_1 for tags in df['tags'] if val in tags]
+
+def remove_from_tags_by_string(string_1, string_2='ignore', string_3='ignore'):
+    [tags.remove(val) for tags in df['tags']
+    for val in tags if string_1 in val or string_2 in val or string_3 in val]
+
+# for count, string in enumerate(df['rating']):
+#     string = str(string)
+#     if any(chr.isdigit() for chr in string) == True and '.' in string:
+#         pass
+#     else:
+#         print(df['rating'][count])
+
+rating = list_of_items_by_word('Excellent', 'Very good', 'Good')
+remove_from_tags_by_string('(',')')
 missing_rating = pd.isnull(df["rating"])
 df["rating"][missing_rating] = rating
-[tags.remove(rate) for tags in df['tags'] for rate in tags if ')' in rate and '(' in rate]
 
-
-min_spend = [my_func([strings for strings in tags if 'minimum' in strings]) for tags in df['tags']]
-[tags.remove(spend) for spend in min_spend for tags in df['tags'] if spend in tags]
+min_spend = list_of_items_by_word('minimum')
 df['minimum_spend'] = min_spend
 df['minimum_spend'] = df['minimum_spend'].str.replace('£', '')
 
-closing = [my_func([strings for strings in tags if 'Closes at' in strings or 'Open until' in strings]) for tags in df['tags']]
-[tags.remove(time) for time in closing for tags in df['tags'] if time in tags]
+closing = list_of_items_by_word('Closes at', 'Open until')
 df['closing_time'] = closing
 
-opening = [my_func([strings for strings in tags if 'Opens at' in strings]) for tags in df['tags']]
-[tags.remove(opens) for opens in opening for tags in df['tags'] if opens in tags]
+opening = list_of_items_by_word('Opens at')
 df['opening_time'] = opening
 
-distance = [my_func([strings for strings in tags if 'miles away' in strings or 'mile away' in strings]) for tags in df['tags']]
-[tags.remove(dist) for dist in distance for tags in df['tags'] if dist in tags]
+distance = list_of_items_by_word("miles away", 'mile away')
 df['distance'] = distance
 
-delivery_charge = [my_func([strings for strings in tags if 'delivery' in strings]) for tags in df['tags']]
-[tags.remove(charge) for charge in delivery_charge for tags in df['tags'] if charge in tags]
+delivery_charge = list_of_items_by_word('delivery')
 df['delivery_charge'] = delivery_charge
-
-delivery_time = [my_func([strings for strings in tags if '-' in strings or 'min' in strings]) for tags in df['tags']]
-[tags.remove(long) for long in delivery_time for tags in df['tags'] if long in tags]
-df['delivery_time'] = delivery_time
-
+df['delivery_charge'] = df['delivery_charge'].str.replace('£', '')
 
 rawtagslist = []
 
@@ -70,14 +78,12 @@ for lis in df['tags']:
         elif 'Info' in string or 'View map' in string or 'Delivered by' in string or 'order' in string or 'Editions' in string:
             pass        
         elif ' ' in string:
-            if any(chr.isdigit() for chr in string) == True:
+            if any(chr.isdigit() for chr in string) == True and 'min' not in string:
                 pass
             else:
                 rawtagslist.append(string)                
         else:
             rawtagslist.append(string)
-
-print(rawtagslist)
 
 for tags in df['tags']:
     for string in tags:
@@ -86,10 +92,10 @@ for tags in df['tags']:
         else: 
             tags.remove(string)
 
-[tags.remove('View map') for tags in df['tags'] if 'View map' in tags] 
- 
-[tags.remove(val) for tags in df['tags'] for val in tags if 'Editions' in val or 'delivered by' in val] 
+delivery_time = list_of_items_by_word('-', 'min')
+df['delivery_time'] = delivery_time
 
+remove_from_tags_by_string('View map', 'Editions','delivered by')
 
 engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
 df.to_sql(f'{address}',engine, if_exists='replace')
