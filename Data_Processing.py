@@ -8,11 +8,11 @@ DATABASE_TYPE = 'postgresql'
 DBAPI = 'psycopg2'
 HOST = 'localhost'
 USER = 'postgres'
-PASSWORD = 'Password'
+PASSWORD = 'password'
 DATABASE = 'DeliverooScrape'
 PORT = 5432
 
-address = 'BS1 4ER'
+address = 'SW1A 0AA'
 
 df = pd.read_json(f'data/{address}/data.json')
 df.columns = ['tags', 'name', 'image_path','uuid', 'url', 'rating']
@@ -36,9 +36,9 @@ def list_of_items_by_word(string_1, string_2='ignore', string_3='ignore'):
 def remove_from_tags_by_list(list_1):
     [tags.remove(val) for val in list_1 for tags in df['tags'] if val in tags]
 
-def remove_from_tags_by_string(string_1, string_2='ignore', string_3='ignore'):
+def remove_from_tags_by_string(string_1, string_2='ignore', string_3='ignore', string_4='ignore'):
     [tags.remove(val) for tags in df['tags']
-    for val in tags if string_1 in val or string_2 in val or string_3 in val]
+    for val in tags if string_1 in val or string_2 in val or string_3 in val or string_4 in val]
 
 # for count, string in enumerate(df['rating']):
 #     string = str(string)
@@ -92,10 +92,10 @@ for tags in df['tags']:
         else: 
             tags.remove(string)
 
+remove_from_tags_by_string('View map', 'Editions','Delivered by', 'updates')
+
 delivery_time = list_of_items_by_word('-', 'min')
 df['delivery_time'] = delivery_time
-
-remove_from_tags_by_string('View map', 'Editions','delivered by')
 
 engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
 df.to_sql(f'{address}',engine, if_exists='replace')
