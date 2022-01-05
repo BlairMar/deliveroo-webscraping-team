@@ -8,7 +8,7 @@ DATABASE_TYPE = 'postgresql'
 DBAPI = 'psycopg2'
 HOST = 'localhost'
 USER = 'postgres'
-PASSWORD = 'password'
+PASSWORD = 'ElSiraajy92!'
 DATABASE = 'DeliverooScrape'
 PORT = 5432
 
@@ -51,6 +51,7 @@ rating = list_of_items_by_word('Excellent', 'Very good', 'Good')
 remove_from_tags_by_string('(',')')
 missing_rating = pd.isnull(df["rating"])
 df["rating"][missing_rating] = rating
+# df["rating"] = df["rating"].str.replace('Excellent' or 'Very good' or 'Good','')
 
 min_spend = list_of_items_by_word('minimum')
 df['minimum_spend'] = min_spend
@@ -68,6 +69,8 @@ df['distance'] = distance
 delivery_charge = list_of_items_by_word('delivery')
 df['delivery_charge'] = delivery_charge
 df['delivery_charge'] = df['delivery_charge'].str.replace('£', '')
+df['delivery_charge'] = df['delivery_charge'].str.replace('delivery', '')
+df['delivery_charge'] = df['delivery_charge'].str.replace('Free', '0')
 
 rawtagslist = []
 
