@@ -1,4 +1,4 @@
-#%%
+# %%
 
 from numpy import NaN
 from sqlalchemy import create_engine
@@ -8,14 +8,15 @@ DATABASE_TYPE = 'postgresql'
 DBAPI = 'psycopg2'
 HOST = 'localhost'
 USER = 'postgres'
-PASSWORD = 'ElSiraajy92!'
+PASSWORD = 'FzA2609042102Ege'
 DATABASE = 'DeliverooScrape'
 PORT = 5432
 
-address = 'SW1A 0AA'
+address = 'BS1 4ER'
 
 df = pd.read_json(f'data/{address}/data.json')
-df.columns = ['tags', 'name', 'image_path','uuid', 'url', 'rating']
+df.columns = ['tags', 'name', 'image_path', 'uuid', 'url', 'rating']
+
 
 def list_to_string(my_list):
     if not my_list:
@@ -25,46 +26,58 @@ def list_to_string(my_list):
 
 #pd.options.mode.chained_assignment = None
 
+
 def list_of_items_by_word(string_1, string_2='ignore', string_3='ignore'):
-    
-    lis = [list_to_string([strings for strings in tags if 
-    string_1 in strings or string_2 in strings or string_3 in strings]) 
-    for tags in df['tags']]
-    remove_from_tags_by_list(lis)    
-    return lis    
+
+    lis = [list_to_string([strings for strings in tags if
+                           string_1 in strings or string_2 in strings or string_3 in strings])
+           for tags in df['tags']]
+    remove_from_tags_by_list(lis)
+    return lis
+
 
 def remove_from_tags_by_list(list_1):
     [tags.remove(val) for val in list_1 for tags in df['tags'] if val in tags]
 
+
 def remove_from_tags_by_string(string_1, string_2='ignore', string_3='ignore', string_4='ignore'):
     [tags.remove(val) for tags in df['tags']
-    for val in tags if string_1 in val or string_2 in val or string_3 in val or string_4 in val]
+     for val in tags if string_1 in val or string_2 in val or string_3 in val or string_4 in val]
 
-# for count, string in enumerate(df['rating']):
-#     string = str(string)
-#     if any(chr.isdigit() for chr in string) == True and '.' in string:
-#         pass
-#     else:
-#         print(df['rating'][count])
+
+def string_replacer(column, original, replacement=''):
+    df[column] = df[column].str.replace(original, replacement)
+
 
 rating = list_of_items_by_word('Excellent', 'Very good', 'Good')
-remove_from_tags_by_string('(',')')
+remove_from_tags_by_string('(', ')')
 missing_rating = pd.isnull(df["rating"])
 df["rating"][missing_rating] = rating
-# df["rating"] = df["rating"].str.replace('Excellent' or 'Very good' or 'Good','')
+
+
+string_replacer('rating', 'Excellent')
+string_replacer('rating', 'Very good')
+string_replacer('rating', 'Good')
 
 min_spend = list_of_items_by_word('minimum')
 df['minimum_spend'] = min_spend
-df['minimum_spend'] = df['minimum_spend'].str.replace('£', '')
+string_replacer('minimum_spend', '£')
+string_replacer('minimum_spend', 'minimum')
+string_replacer('minimum_spend', 'No', '0')
+
 
 closing = list_of_items_by_word('Closes at', 'Open until')
 df['closing_time'] = closing
+string_replacer('closing_time', 'Closes at', ' ')
+string_replacer('closing_time', 'Open until', ' ')
+string_replacer('closing_time', ':', ' ')
 
 opening = list_of_items_by_word('Opens at')
 df['opening_time'] = opening
 
 distance = list_of_items_by_word("miles away", 'mile away')
 df['distance'] = distance
+string_replacer('distance', 'miles away')
 
 delivery_charge = list_of_items_by_word('delivery')
 df['delivery_charge'] = delivery_charge
@@ -79,12 +92,12 @@ for lis in df['tags']:
         if string in rawtagslist:
             pass
         elif 'Info' in string or 'View map' in string or 'Delivered by' in string or 'order' in string or 'Editions' in string:
-            pass        
+            pass
         elif ' ' in string:
             if any(chr.isdigit() for chr in string) == True and 'min' not in string:
                 pass
             else:
-                rawtagslist.append(string)                
+                rawtagslist.append(string)
         else:
             rawtagslist.append(string)
 
@@ -92,15 +105,18 @@ for tags in df['tags']:
     for string in tags:
         if string in rawtagslist:
             pass
-        else: 
+        else:
             tags.remove(string)
 
-remove_from_tags_by_string('View map', 'Editions','Delivered by', 'updates')
+remove_from_tags_by_string('View map', 'Editions', 'Delivered by', 'updates')
 
 delivery_time = list_of_items_by_word('-', 'min')
 df['delivery_time'] = delivery_time
+string_replacer('delivery_time', 'min')
 
-engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
-df.to_sql(f'{address}',engine, if_exists='replace')
+
+engine = create_engine(
+    f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+df.to_sql(f'{address}', engine, if_exists='replace')
 
 # %%
