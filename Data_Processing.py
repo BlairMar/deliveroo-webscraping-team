@@ -9,7 +9,7 @@ DBAPI = 'psycopg2'
 ENDPOINT = 'deliveroo-db-aircore.czptd4qhcb21.eu-west-2.rds.amazonaws.com'
 USER = 'postgres'
 PASSWORD = 'DivyaEddieHeshamSiraj'
-DATABASE = 'DeliverooScrape'
+DATABASE = 'postgres'
 PORT = 5432
 
 address = 'BS1 4ER'
