@@ -6,9 +6,9 @@ import pandas as pd
 
 DATABASE_TYPE = 'postgresql'
 DBAPI = 'psycopg2'
-HOST = 'localhost'
+ENDPOINT = 'deliveroo-db-aircore.czptd4qhcb21.eu-west-2.rds.amazonaws.com'
 USER = 'postgres'
-PASSWORD = 'FzA2609042102Ege'
+PASSWORD = 'DivyaEddieHeshamSiraj'
 DATABASE = 'DeliverooScrape'
 PORT = 5432
 
@@ -116,7 +116,9 @@ string_replacer('delivery_time', 'min')
 
 
 engine = create_engine(
-    f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+    f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}")
 df.to_sql(f'{address}', engine, if_exists='replace')
 
+# %%
+engine.connect()
 # %%
