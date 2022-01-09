@@ -177,7 +177,7 @@ class Scraper:
         url = url.replace('url("', '').replace('")', '')
         return url
 
-    def scrape(self):
+    def scrape(self, num):
         """
         This function calls private members of the scrape class and returns data on restaurants on deliveroo.
         
