@@ -18,7 +18,7 @@ class Scraper:
     Attributes:
     Address (string): The postcode of the area of restaurants to be scraped. 
     """
-    def __init__(self, address: str) -> None:
+    def __init__(self, address: str, existing_data=[]) -> None:
         """
         See help(Scraper) for accurate signature.
         """
@@ -27,15 +27,15 @@ class Scraper:
         self.driver = webdriver.Chrome(options=options)
         self.driver.get('https://deliveroo.co.uk')
         self.address = address
-        self.dataoutput = f'data/{address}'
+        self.existing_data = existing_data
 
-    def __load_data_if_exists(self):
-        if os.path.isfile(f'{self.dataoutput}/data.json'):
-            with open (f'{self.dataoutput}/data.json', 'r') as file:
-                existing_data = json.load(file)
-            return existing_data
-        else:
-            return []
+    # def __load_data_if_exists(self):
+    #     if os.path.isfile(f'{self.dataoutput}/data.json'):
+    #         with open (f'{self.dataoutput}/data.json', 'r') as file:
+    #             existing_data = json.load(file)
+    #         return existing_data
+    #     else:
+    #         return []
     
     def _accept_cookies(self):
         WebDriverWait(self.driver, 1.5).until(
@@ -202,7 +202,7 @@ class Scraper:
         self._sort_page()
         time.sleep(2)
         urls = self._collect_restaurants(num)
-        restaurants = self.__load_data_if_exists()
+        restaurants = self.existing_data
         for (name, url) in urls:
             if url in restaurants.__str__():
                 continue
