@@ -37,18 +37,18 @@ class Scraper:
         else:
             return []
     
-    def __accept_cookies(self):
+    def _accept_cookies(self):
         WebDriverWait(self.driver, 1.5).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
         ).click()
 
-    def __address_folder(self):
+    def _address_folder(self):
         if os.path.isdir(f'{self.dataoutput}/images'):
             pass
         else:
             os.makedirs(f'{self.dataoutput}/images')
 
-    def __enter_address(self, address):
+    def _enter_address(self, address):
         self.addressbar = self.driver.find_element(By.XPATH, '//*[@id="location-search"]')
         self.addressbar.send_keys(f'{address}')
         self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div[2]/div[3]/div/div[1]/div/div[2]/div/div/div/div/div/div[2]/span/button').click()
@@ -58,15 +58,16 @@ class Scraper:
             ).click()
         except:  #if map location does not show 
             pass
-        try:
-            WebDriverWait(self.driver, 2).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div/div[1]/div/div/div/div/a'))
-            )
-        except:
-            raise ValueError('Sorry! Deliveroo does not operate in this area, try a different address!')
+        # TODO: this needs some work!
+        # try:
+        #     WebDriverWait(self.driver, 2).until(
+        #         EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div/div/div[1]/div/div/div/div/a'))
+        #     )
+        # except:
+        #     raise ValueError('Sorry! Deliveroo does not operate in this area, try a different address!')
         
     
-    def __acknowledge_popups(self):
+    def _acknowledge_popups(self):
         # find the "Ok" button in acknowledgement pop ups
         time.sleep(1.5)
         try:
@@ -78,7 +79,7 @@ class Scraper:
         except:
             pass
             
-    def __sort_page(self, option: str='Top_rated'):
+    def _sort_page(self, option: str='Top_rated'):
         sort_options = {
             'Distance': 0,
             'Hygiene_ratings': 1,
@@ -98,7 +99,7 @@ class Scraper:
         except:
             pass
         
-    def __collect_restaurants(self, limit: int=None):
+    def _collect_restaurants(self, limit: int=None):
         try:
             res_menu = WebDriverWait(self.driver, 5).until(
                 EC.visibility_of_element_located((By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul'))
@@ -119,7 +120,7 @@ class Scraper:
                 pass
         return urls
 
-    def __get_summary(self):
+    def _get_summary(self):
         data = {}
         try:
             # Image on the right side of the page and description on the left
@@ -194,21 +195,19 @@ class Scraper:
         Returns:
         Dictionary of scraped data and jpgs of the restaurants.
         """
-        self.__accept_cookies()
-        self.__enter_address(self.address)
-        self.__address_folder()
-        self.__acknowledge_popups()
-        self.__sort_page()
+        self._accept_cookies()
+        self._enter_address(self.address)
+        self._address_folder()
+        self._acknowledge_popups()
+        self._sort_page()
         time.sleep(2)
-        urls = self.__collect_restaurants(num)
+        urls = self._collect_restaurants(num)
         restaurants = self.__load_data_if_exists()
         for (name, url) in urls:
             if url in restaurants.__str__():
                 continue
             try:
-                self.driver.execute_script(f"window.open('{url}', '_blank');")
-                self.driver.close()
-                self.driver.switch_to.window(self.driver.window_handles[0])
+                self.driver.get(url)
                 try:
                     data = self.__get_summary()
                     data['uuid'] = str(uuid4())
@@ -217,7 +216,7 @@ class Scraper:
                 except:
                     print(f'Unable to scrape restaurant page {url}')
             except:
-                print(f'Unable to open tab {url}')
+                print(f'Unable to open page {url}')
         
         with open(f'{self.dataoutput}/data.json', 'w') as outfile:
             json.dump(restaurants, outfile, indent=2)

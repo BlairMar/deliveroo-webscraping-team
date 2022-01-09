@@ -144,3 +144,10 @@ cython_debug/
 
 # Data
 data/
+
+# macOS
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
