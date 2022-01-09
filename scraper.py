@@ -205,7 +205,6 @@ class Scraper:
                     print(f'Unable to scrape restaurant page {url}')
             except:
                 print(f'Unable to open page {url}')
-
         return restaurants
 
 
