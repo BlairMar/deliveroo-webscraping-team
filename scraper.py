@@ -220,7 +220,7 @@ class Scraper:
         
         with open(f'{self.dataoutput}/data.json', 'w') as outfile:
             json.dump(restaurants, outfile, indent=2)
-
+        
         return restaurants
 
 
