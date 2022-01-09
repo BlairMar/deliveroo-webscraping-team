@@ -1,6 +1,6 @@
 import sentry_sdk
 
-def set_up_logger(dsn, env='staging'):
+def set_up_logger(dsn, env='local'):
     sentry_sdk.init(
         dsn,
         environment=env
