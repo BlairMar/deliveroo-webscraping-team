@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from uuid import uuid4
+from logger import log
 
 import requests
 import time
@@ -184,6 +185,7 @@ class Scraper:
         Returns:
         Dictionary of scraped data and jpgs of the restaurants.
         """
+        log('info', f'Starting {num} restaurants scraping at address {self.address}')
         self._accept_cookies()
         self._enter_address(self.address)
         self._acknowledge_popups()

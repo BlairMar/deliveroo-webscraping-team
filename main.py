@@ -1,6 +1,7 @@
 from scraper import Scraper
 from database import set_up_database
 from data_processing import process
+from logger import set_up_logger
 
 import os
 
@@ -21,6 +22,7 @@ def main():
     address = 'LS12 5NJ'
     output_loc = f'data/{address}'
     set_up_dirs(output_loc)
+    set_up_logger("https://d2744aa667304febbb8766ca55f650f8@o1086610.ingest.sentry.io/6098931")
     engine = set_up_database()
     
     with engine.connect() as conn:

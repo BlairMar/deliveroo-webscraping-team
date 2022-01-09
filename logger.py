@@ -1,3 +1,4 @@
+from datetime import datetime
 import sentry_sdk
 
 def set_up_logger(dsn, env='local'):
@@ -11,4 +12,4 @@ def log(level, message):
     if level not in ['info', 'warn', 'error', 'fatal']:
         lvl = 'debug'
     sentry_sdk.capture_message(lvl, message)
-    print(f'{lvl.upper()}: {message}')
+    print(f'{datetime.now()} - {lvl.upper()}: {message}')
