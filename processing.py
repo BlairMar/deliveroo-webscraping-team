@@ -1,9 +1,10 @@
+
 from numpy import NaN
 import pandas as pd
 
 def process(data):
-    df = pd.from_dict(data)
-    df.columns = ['tags', 'name', 'image_path', 'uuid', 'url', 'rating']
+    df = pd.DataFrame.from_dict(data)
+    # df.columns = ['tags', 'name', 'image_path', 'uuid', 'url', 'rating']
     
     #pd.options.mode.chained_assignment = None
     def list_to_string(my_list):
@@ -31,16 +32,17 @@ def process(data):
 
     def string_replacer(column, original, replacement=''):
         df[column] = df[column].str.replace(original, replacement)
-        
-    rating = list_of_items_by_word('Excellent', 'Very good', 'Good')
-    remove_from_tags_by_string('(', ')')
-    missing_rating = pd.isnull(df["rating"])
-    df["rating"][missing_rating] = rating
+
+    if 'rating' in df:    
+        rating = list_of_items_by_word('Excellent', 'Very good', 'Good')
+        remove_from_tags_by_string('(', ')')
+        missing_rating = pd.isnull(df["rating"])
+        df["rating"][missing_rating] = rating
 
 
-    string_replacer('rating', 'Excellent')
-    string_replacer('rating', 'Very good')
-    string_replacer('rating', 'Good')
+        string_replacer('rating', 'Excellent')
+        string_replacer('rating', 'Very good')
+        string_replacer('rating', 'Good')
 
     min_spend = list_of_items_by_word('minimum')
     df['minimum_spend'] = min_spend

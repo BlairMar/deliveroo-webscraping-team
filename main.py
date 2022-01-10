@@ -1,14 +1,16 @@
+
 from scraper import Scraper
 from database import set_up_database
-from data_processing import process
+from processing import process
 from logger import set_up_logger
+import json
 
 import os
 
 def load_data(address, conn):
     import pandas as pd
     
-    query = f'SELECT * FROM {address}'
+    query = f'SELECT * FROM "{address}"'
     df = pd.read_sql(query, conn)
     return df.to_dict()
 
@@ -19,7 +21,7 @@ def set_up_dirs(output_loc):
         os.makedirs(f'{output_loc}/images')
 
 def main():
-    address = 'LS12 5NJ'
+    address = 'SW1A 0AA'
     output_loc = f'data/{address}'
     set_up_dirs(output_loc)
     set_up_logger("https://d2744aa667304febbb8766ca55f650f8@o1086610.ingest.sentry.io/6098931")
@@ -27,6 +29,7 @@ def main():
     
     with engine.connect() as conn:
         existing_data = load_data(address, conn)
+    print(existing_data)
     
     scraper = Scraper(address, existing_data, output_loc)
     data = scraper.scrape(5)
@@ -42,3 +45,4 @@ def main():
    
 if __name__ == '__main__':
     main()
+

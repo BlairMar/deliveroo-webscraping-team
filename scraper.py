@@ -199,7 +199,7 @@ class Scraper:
             try:
                 self.driver.get(url)
                 try:
-                    data = self.__get_summary()
+                    data = self._get_summary()
                     data['uuid'] = str(uuid4())
                     data['url'] = url
                     restaurants.append(data)
