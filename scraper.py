@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from uuid import uuid4
+from logger import log
 
 import requests
 import time
@@ -18,35 +19,27 @@ class Scraper:
     Attributes:
     Address (string): The postcode of the area of restaurants to be scraped. 
     """
-    def __init__(self, address: str) -> None:
+    def __init__(self, address: str, existing_data=[], output_loc=None) -> None:
         """
         See help(Scraper) for accurate signature.
         """
         options = Options()
-        # options.headless = True
+        options.headless = True
+        options.add_argument('--disable-gpu')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
         self.driver = webdriver.Chrome(options=options)
         self.driver.get('https://deliveroo.co.uk')
         self.address = address
-        self.dataoutput = f'data/{address}'
-
-    def __load_data_if_exists(self):
-        if os.path.isfile(f'{self.dataoutput}/data.json'):
-            with open (f'{self.dataoutput}/data.json', 'r') as file:
-                existing_data = json.load(file)
-            return existing_data
-        else:
-            return []
+        self.existing_data = existing_data
+        self.dataoutput = output_loc
+        if output_loc is None:
+            self.dataoutput = f'data/{address}'
     
     def _accept_cookies(self):
         WebDriverWait(self.driver, 1.5).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
         ).click()
-
-    def _address_folder(self):
-        if os.path.isdir(f'{self.dataoutput}/images'):
-            pass
-        else:
-            os.makedirs(f'{self.dataoutput}/images')
 
     def _enter_address(self, address):
         self.addressbar = self.driver.find_element(By.XPATH, '//*[@id="location-search"]')
@@ -195,21 +188,21 @@ class Scraper:
         Returns:
         Dictionary of scraped data and jpgs of the restaurants.
         """
+        log('info', f'Starting {num} restaurants scraping at address {self.address}')
         self._accept_cookies()
         self._enter_address(self.address)
-        self._address_folder()
         self._acknowledge_popups()
         self._sort_page()
         time.sleep(2)
         urls = self._collect_restaurants(num)
-        restaurants = self.__load_data_if_exists()
+        restaurants = self.existing_data
         for (name, url) in urls:
             if url in restaurants.__str__():
                 continue
             try:
                 self.driver.get(url)
                 try:
-                    data = self.__get_summary()
+                    data = self._get_summary()
                     data['uuid'] = str(uuid4())
                     data['url'] = url
                     restaurants.append(data)
@@ -217,11 +210,4 @@ class Scraper:
                     print(f'Unable to scrape restaurant page {url}')
             except:
                 print(f'Unable to open page {url}')
-        
-        with open(f'{self.dataoutput}/data.json', 'w') as outfile:
-            json.dump(restaurants, outfile, indent=2)
-        
         return restaurants
-
-
-    
