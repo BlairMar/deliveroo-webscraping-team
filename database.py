@@ -1,28 +1,12 @@
 from sqlalchemy import create_engine
-
-import os
-
-class Config:
-    PORT = 5432
-    USER = 'postgres'
-    PASSWORD = 'localpassword'
-    NAME = 'DeliverooScrape'
-    HOST = 'localhost'
+from config import config
 
 def set_up_database():
-    if 'RDS_HOSTNAME' not in os.environ:
-        HOST = Config.HOST
-        PORT = Config.PORT
-        USER = Config.USER
-        PASSWORD = Config.PASSWORD
-        DBNAME = Config.NAME
-    else:
-        HOST = os.environ['RDS_HOSTNAME']
-        PORT = os.environ['RDS_PORT']
-        USER = os.environ['RDS_USERNAME']
-        PASSWORD = os.environ['RDS_PASSWORD']
-        DBNAME = os.environ['RDS_DB_NAME']
-   
+    HOST = config['DB_HOST']
+    PORT = config['DB_PORT']
+    USER = config['DB_USER']
+    PASSWORD = config['DB_PASSWORD']
+    DBNAME = config['DB_NAME']
     
     DATABASE_TYPE = 'postgresql'
     DBAPI = 'psycopg2'

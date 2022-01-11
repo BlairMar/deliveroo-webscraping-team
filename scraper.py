@@ -24,7 +24,10 @@ class Scraper:
         See help(Scraper) for accurate signature.
         """
         options = Options()
-        # options.headless = True
+        options.headless = True
+        options.add_argument('--disable-gpu')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
         self.driver = webdriver.Chrome(options=options)
         self.driver.get('https://deliveroo.co.uk')
         self.address = address
@@ -208,6 +211,3 @@ class Scraper:
             except:
                 print(f'Unable to open page {url}')
         return restaurants
-
-
-    

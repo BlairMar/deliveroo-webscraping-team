@@ -1,0 +1,11 @@
+services:
+  del:
+    build: 
+      dockerfile: Dockerfile
+    depends_on:
+      - del_db
+  del_db:
+    build: 
+      dockerfile: postgres.Dockerfile
+    ports:
+      - "5432:5432"

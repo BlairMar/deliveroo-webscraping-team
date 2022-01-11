@@ -1,10 +1,11 @@
 from datetime import datetime
+from config import config
 import sentry_sdk
 
-def set_up_logger(dsn, env='local'):
+def set_up_logger():
     sentry_sdk.init(
-        dsn,
-        environment=env
+        dsn=config['SENTRY_DSN'],
+        environment=config['SENTRY_ENVIRONMENT']
     )
 
 def log(level, message):

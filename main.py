@@ -3,6 +3,7 @@ from scraper import Scraper
 from database import set_up_database
 from processing import process
 from logger import set_up_logger
+from config import set_up_config
 import json
 
 import os
@@ -23,13 +24,13 @@ def set_up_dirs(output_loc):
 def main():
     address = 'SW1A 0AA'
     output_loc = f'data/{address}'
+    set_up_config()
     set_up_dirs(output_loc)
-    set_up_logger("https://d2744aa667304febbb8766ca55f650f8@o1086610.ingest.sentry.io/6098931")
+    set_up_logger()
     engine = set_up_database()
     
     with engine.connect() as conn:
         existing_data = load_data(address, conn)
-    print(existing_data)
     
     scraper = Scraper(address, existing_data, output_loc)
     data = scraper.scrape(5)
