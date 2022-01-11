@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from config import config
+from logger import log
 
 def set_up_database():
     HOST = config['DB_HOST']
@@ -12,6 +13,6 @@ def set_up_database():
     DBAPI = 'psycopg2'
     
     engine = create_engine(f'{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}')
-    print("Database connected!")
+    log('info', "Database connected!", False)
     return engine
 

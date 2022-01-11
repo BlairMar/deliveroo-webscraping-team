@@ -8,9 +8,14 @@ import json
 
 import os
 
-def load_data(address, conn):
+def load_data(address, engine, conn):
     import pandas as pd
+    from sqlalchemy import inspect
     
+    ins = inspect(engine)
+    if not ins.has_table(address):
+        return []
+        
     query = f'SELECT * FROM "{address}"'
     df = pd.read_sql(query, conn)
     return df.to_dict()
@@ -30,7 +35,7 @@ def main():
     engine = set_up_database()
     
     with engine.connect() as conn:
-        existing_data = load_data(address, conn)
+        existing_data = load_data(address, engine, conn)
     
     scraper = Scraper(address, existing_data, output_loc)
     data = scraper.scrape(5)
