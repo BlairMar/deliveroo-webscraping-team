@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from uuid import uuid4
 from logger import log
+from collections import Counter
 
 import requests
 import time
@@ -195,7 +196,9 @@ class Scraper:
         self._sort_page()
         time.sleep(2)
         urls = self._collect_restaurants(num)
+        length_of_collect_urls = len(urls)
         restaurants = self.existing_data
+        counter_of_restaurants = Counter(restaurants)
         for (name, url) in urls:
             if url in restaurants.__str__():
                 continue
