@@ -37,7 +37,7 @@ class Scraper:
             self.dataoutput = f'data/{address}'
     
     def _accept_cookies(self):
-        WebDriverWait(self.driver, 1.5).until(
+        WebDriverWait(self.driver, 4).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
         ).click()
 
@@ -189,15 +189,23 @@ class Scraper:
         Dictionary of scraped data and jpgs of the restaurants.
         """
         log('info', f'Starting {num} restaurants scraping at address {self.address}')
+        log('info', 'Stage 1: accepting cookies...')
         self._accept_cookies()
+        log('info', f'Stage 2: entering address {self.address}')
         self._enter_address(self.address)
+        log('info', 'Stage 3: close any promotional pop ups')
         self._acknowledge_popups()
+        log('info', 'Stage 4: sort restaurants...')
         self._sort_page()
         time.sleep(2)
+        log('info', f'Stage 5: collect {num} restaurants...')
         urls = self._collect_restaurants(num)
         restaurants = self.existing_data
-        for (name, url) in urls:
+        log('info', 'Stage 6: Scraping each collected restaurant...')
+        for i, (name, url) in enumerate(urls):
+            log('info', f'{i + 1}: Attempting to scrape {name}')
             if url in restaurants.__str__():
+                log('info', 'Restaurant already exists, skipping...')
                 continue
             try:
                 self.driver.get(url)
@@ -206,8 +214,8 @@ class Scraper:
                     data['uuid'] = str(uuid4())
                     data['url'] = url
                     restaurants.append(data)
-                except:
-                    print(f'Unable to scrape restaurant page {url}')
-            except:
-                print(f'Unable to open page {url}')
+                except Exception as e:
+                    log('error', f'Unable to scrape restaurant page {url}: {e}')
+            except Exception as e:
+                log('error', f'Unable to open page {url}: {e}')
         return restaurants
