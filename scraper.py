@@ -198,7 +198,8 @@ class Scraper:
         urls = self._collect_restaurants(num)
         length_of_collect_urls = len(urls)
         restaurants = self.existing_data
-        counter_of_restaurants = Counter(restaurants)
+        #counter_of_restaurants = Counter(restaurants)
+        count_of_restaurants = 0
         for (name, url) in urls:
             if url in restaurants.__str__():
                 continue
@@ -209,8 +210,10 @@ class Scraper:
                     data['uuid'] = str(uuid4())
                     data['url'] = url
                     restaurants.append(data)
+                    count_of_restaurants +=1
                 except:
                     print(f'Unable to scrape restaurant page {url}')
             except:
                 print(f'Unable to open page {url}')
+        print(f'Out of {length_of_collect_urls} the number of urls scrapered are: {count_of_restaurants}')    
         return restaurants
