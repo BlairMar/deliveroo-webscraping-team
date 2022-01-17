@@ -4,7 +4,7 @@ from database import set_up_database
 from processing import image_process, process
 from logger import set_up_logger
 from config import set_up_config
-from boto import set_up_boto
+from boto import Upload
 import json
 
 import os
@@ -34,7 +34,7 @@ def main():
     set_up_dirs(output_loc)
     set_up_logger()
     engine = set_up_database()
-    set_up_boto()
+    Upload.set_up_boto()
     
     with engine.connect() as conn:
         existing_data = load_data(address, engine, conn)
