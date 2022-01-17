@@ -1,9 +1,10 @@
 
 from scraper import Scraper
 from database import set_up_database
-from processing import process
+from processing import image_process, process
 from logger import set_up_logger
 from config import set_up_config
+from boto import set_up_boto
 import json
 
 import os
@@ -33,6 +34,7 @@ def main():
     set_up_dirs(output_loc)
     set_up_logger()
     engine = set_up_database()
+    set_up_boto()
     
     with engine.connect() as conn:
         existing_data = load_data(address, engine, conn)
@@ -48,7 +50,13 @@ def main():
         print('Saving to json instead...')
         with open(f'{output_loc}/data.json', 'w') as outfile:
             json.dump(data, outfile,indent=2)
-   
+
+    try:
+        image_process(output_loc)
+    except:
+        print('Unable to process and save images to s3..')
+
+
 if __name__ == '__main__':
     main()
 

@@ -1,6 +1,7 @@
 
 from numpy import NaN
 import pandas as pd
+from boto import upload_file
 
 def process(data):
     df = pd.DataFrame.from_dict(data)
@@ -100,3 +101,7 @@ def process(data):
     string_replacer('delivery_time', 'min')
     
     return df
+
+
+def image_process(path):
+    upload_file(path)
