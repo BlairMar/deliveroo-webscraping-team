@@ -73,6 +73,12 @@ class Scraper:
             self.driver.find_element(By.XPATH,'/html/body/div[9]/div/div/div/div/div/div[2]/span[2]/button').click()
         except:
             pass
+        try:
+            modals = self.driver.find_elements(By.XPATH, '//div[starts-with(@class, "ReactModalPortal")]')
+            for modal in modals:
+                self.driver.execute_script("arguments[0].style.display = 'none';", modal)
+        except Exception as e:
+            log('error', f'Unable to hide modals: {e}')
             
     def _sort_page(self, option: str='Top_rated'):
         sort_options = {
