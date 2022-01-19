@@ -28,8 +28,10 @@ class Scraper:
         options.add_argument('--disable-gpu')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('window-size=1920,1080')
         self.driver = webdriver.Chrome(options=options)
         self.driver.get('https://deliveroo.co.uk')
+        time.sleep(4)
         self.address = address
         self.existing_data = existing_data
         self.dataoutput = output_loc
@@ -94,10 +96,11 @@ class Scraper:
         
     def _collect_restaurants(self, limit: int=None):
         try:
-            res_menu = WebDriverWait(self.driver, 5).until(
+            res_menu = WebDriverWait(self.driver, 15).until(
                 EC.visibility_of_element_located((By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul'))
             )
-        except:
+        except Exception as e:
+            log('error', f'Unable to find restaurants container {e}')
             return []
         res_list = res_menu.find_elements(By.TAG_NAME,'li')
         urls = []
@@ -106,10 +109,14 @@ class Scraper:
                 if limit is not None and len(urls) >= limit:
                     break
                 el = res.find_element(By.TAG_NAME,'a')
-                res_name = el.text
+                try:
+                    res_name = el.find_element(By.TAG_NAME, 'p').text
+                except Exception as e:
+                    log('error', f'Unable to get restaurant from card {e}')
+                    res_name = ''
                 res_url = el.get_attribute('href')
                 urls.append((res_name,res_url))
-            except:
+            except Exception as e:
                 pass
         return urls
 
@@ -197,11 +204,11 @@ class Scraper:
         self._acknowledge_popups()
         log('info', 'Stage 4: sort restaurants...')
         self._sort_page()
-        time.sleep(2)
+        time.sleep(10)
         log('info', f'Stage 5: collect {num} restaurants...')
         urls = self._collect_restaurants(num)
         restaurants = self.existing_data
-        log('info', 'Stage 6: Scraping each collected restaurant...')
+        log('info', f'Stage 6: Scraping each collected {len(urls)} restaurant...')
         for i, (name, url) in enumerate(urls):
             log('info', f'{i + 1}: Attempting to scrape {name}')
             if url in restaurants.__str__():
