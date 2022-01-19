@@ -80,25 +80,10 @@ class Scraper:
         except Exception as e:
             log('error', f'Unable to hide modals: {e}')
             
-    def _sort_page(self, option: str='Top_rated'):
-        sort_options = {
-            'Distance': 0,
-            'Hygiene_ratings': 1,
-            'Recommended': 2,
-            'Time': 3,
-            'Top_rated': 4
-        }
-        if option not in sort_options:
-            raise ValueError("Option does not exist")
-        try:
-            WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/button'))
-            ).click()
-            filter_list = self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/div/ul')
-            
-            filter_list.find_elements(By.XPATH, './li/label/input')[sort_options[option]].click()
-        except:
-            pass
+    def _sort_page(self, option: str='rating'):
+        options = ['time', 'rating', 'hygiene', 'distance']
+        if option in options:
+            self.driver.get(f'{self.driver.current_url}&sort={option}')
         
     def _collect_restaurants(self, limit: int=None):
         try:
