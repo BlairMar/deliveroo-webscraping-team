@@ -1,7 +1,6 @@
 selenium
 sentry_sdk
 sqlalchemy
-numpy
 pandas
 psycopg2
 requests

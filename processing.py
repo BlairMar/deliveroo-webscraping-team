@@ -1,5 +1,4 @@
 
-from numpy import NaN
 import pandas as pd
 
 def process(data):
@@ -12,11 +11,10 @@ def process(data):
             return None
         else:
             return my_list[0]
-    def list_of_items_by_word(string_1, string_2='ignore', string_3='ignore'):
+    def list_of_items_by_word(*args):
 
-        lis = [list_to_string([strings for strings in tags if
-                            string_1 in strings or string_2 in strings or string_3 in strings])
-            for tags in df['tags']]
+        lis = [list_to_string([strings for strings in tags for arg in args if
+                            arg in strings]) for tags in df['tags']]
         remove_from_tags_by_list(lis)
         return lis
 
@@ -55,7 +53,6 @@ def process(data):
     df['closing_time'] = closing
     string_replacer('closing_time', 'Closes at', ' ')
     string_replacer('closing_time', 'Open until', ' ')
-    string_replacer('closing_time', ':', ' ')
 
     opening = list_of_items_by_word('Opens at')
     df['opening_time'] = opening
@@ -63,6 +60,7 @@ def process(data):
     distance = list_of_items_by_word("miles away", 'mile away')
     df['distance'] = distance
     string_replacer('distance', 'miles away')
+    string_replacer('distance', 'mile away')
 
     delivery_charge = list_of_items_by_word('delivery')
     df['delivery_charge'] = delivery_charge
