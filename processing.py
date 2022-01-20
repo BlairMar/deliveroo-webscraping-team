@@ -31,6 +31,9 @@ def process(data):
     def string_replacer(column, original, replacement=''):
         df[column] = df[column].str.replace(original, replacement)
 
+    # Problem! Rating column not added for all addresses
+    
+
     if 'rating' in df:    
         rating = list_of_items_by_word('Excellent', 'Very good', 'Good')
         remove_from_tags_by_string('(', ')')
@@ -68,28 +71,28 @@ def process(data):
     df['delivery_charge'] = df['delivery_charge'].str.replace('delivery', '')
     df['delivery_charge'] = df['delivery_charge'].str.replace('Free', '0')
 
-    rawtagslist = []
+    # rawtagslist = []
 
-    for lis in df['tags']:
-        for string in lis:
-            if string in rawtagslist:
-                pass
-            elif 'Info' in string or 'View map' in string or 'Delivered by' in string or 'order' in string or 'Editions' in string:
-                pass
-            elif ' ' in string:
-                if any(chr.isdigit() for chr in string) == True and 'min' not in string:
-                    pass
-                else:
-                    rawtagslist.append(string)
-            else:
-                rawtagslist.append(string)
+    # for lis in df['tags']:
+    #     for string in lis:
+    #         if string in rawtagslist:
+    #             pass
+    #         elif 'Info' in string or 'View map' in string or 'Delivered by' in string or 'order' in string or 'Editions' in string:
+    #             pass
+    #         elif ' ' in string:
+    #             if any(chr.isdigit() for chr in string) == True and 'min' not in string:
+    #                 pass
+    #             else:
+    #                 rawtagslist.append(string)
+    #         else:
+    #             rawtagslist.append(string)
 
-    for tags in df['tags']:
-        for string in tags:
-            if string in rawtagslist:
-                pass
-            else:
-                tags.remove(string)
+    # for tags in df['tags']:
+    #     for string in tags:
+    #         if string in rawtagslist:
+    #             pass
+    #         else:
+    #             tags.remove(string)
 
     remove_from_tags_by_string('View map', 'Editions', 'Delivered by', 'updates')
 
