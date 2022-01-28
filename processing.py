@@ -1,6 +1,6 @@
 
 import pandas as pd
-from boto import Upload
+from uploads import Upload
 
 def process(data):
     df = pd.DataFrame.from_dict(data)
@@ -103,6 +103,6 @@ def process(data):
     
     return df
 
-
-def image_process(path):
-    Upload.upload_file(path)
+def upload_images(df, directory):
+    upload = Upload()
+    df['image_s3_key'] = df.apply(lambda entry: upload.upload_file(entry['image_path'], directory=directory))
