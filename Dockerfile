@@ -1,4 +1,4 @@
-FROM python:3.7-slim-buster
+FROM --platform=linux/amd64 python:3.8 
 
 RUN ["apt-get", "-y",  "update"]
 RUN ["apt", "install", "-y", "wget", "gnupg", "curl"]
@@ -7,6 +7,7 @@ RUN ["apt", "install", "-y", "wget", "gnupg", "curl"]
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 RUN ["apt-get", "-y",  "update"]
+RUN ["apt-get", "-y",  "upgrade"]
 RUN ["apt-get", "install",  "-y", "google-chrome-stable"]
 
 # Download chromedriver
@@ -36,5 +37,4 @@ ENV AWS_SECRET_ACCESS_KEY="UEMe0fYALHKOU+Kw7nA00vk28cFOmPc/Z7+ZyFw/"
 ENV REGION_NAME="eu-west-2"
 
 RUN ["pip3", "install", "-r", "requirements.txt"]
-ENTRYPOINT [ "python3.7", "main.py" ]
-
+ENTRYPOINT [ "python3.8", "main.py" ]

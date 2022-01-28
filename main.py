@@ -19,7 +19,9 @@ def load_data(address, engine, conn):
         
     query = f'SELECT * FROM "{address}"'
     df = pd.read_sql(query, conn)
-    return df.to_dict()
+    
+    df.drop(['index'], axis=1, inplace=True)
+    return list(df.T.to_dict().values())
 
 def set_up_dirs(output_loc):
     if os.path.isdir(f'{output_loc}/images'):

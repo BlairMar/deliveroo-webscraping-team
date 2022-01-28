@@ -28,8 +28,10 @@ class Scraper:
         options.add_argument('--disable-gpu')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('window-size=1920,1080')
         self.driver = webdriver.Chrome(options=options)
         self.driver.get('https://deliveroo.co.uk')
+        time.sleep(4)
         self.address = address
         self.existing_data = existing_data
         self.dataoutput = output_loc
@@ -37,7 +39,7 @@ class Scraper:
             self.dataoutput = f'data/{address}'
     
     def _accept_cookies(self):
-        WebDriverWait(self.driver, 1.5).until(
+        WebDriverWait(self.driver, 4).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]'))
         ).click()
 
@@ -71,33 +73,25 @@ class Scraper:
             self.driver.find_element(By.XPATH,'/html/body/div[9]/div/div/div/div/div/div[2]/span[2]/button').click()
         except:
             pass
-            
-    def _sort_page(self, option: str='Top_rated'):
-        sort_options = {
-            'Distance': 0,
-            'Hygiene_ratings': 1,
-            'Recommended': 2,
-            'Time': 3,
-            'Top_rated': 4
-        }
-        if option not in sort_options:
-            raise ValueError("Option does not exist")
         try:
-            WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/button'))
-            ).click()
-            filter_list = self.driver.find_element(By.XPATH, '//*[@id="__next"]/div/div/div[2]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/div/ul')
+            modals = self.driver.find_elements(By.XPATH, '//div[starts-with(@class, "ReactModalPortal")]')
+            for modal in modals:
+                self.driver.execute_script("arguments[0].style.display = 'none';", modal)
+        except Exception as e:
+            log('error', f'Unable to hide modals: {e}')
             
-            filter_list.find_elements(By.XPATH, './li/label/input')[sort_options[option]].click()
-        except:
-            pass
+    def _sort_page(self, option: str='rating'):
+        options = ['time', 'rating', 'hygiene', 'distance']
+        if option in options:
+            self.driver.get(f'{self.driver.current_url}&sort={option}')
         
     def _collect_restaurants(self, limit: int=None):
         try:
-            res_menu = WebDriverWait(self.driver, 5).until(
+            res_menu = WebDriverWait(self.driver, 15).until(
                 EC.visibility_of_element_located((By.XPATH,'//*[@id="__next"]/div/div/div[2]/div/div[2]/div/ul'))
             )
-        except:
+        except Exception as e:
+            log('error', f'Unable to find restaurants container {e}')
             return []
         res_list = res_menu.find_elements(By.TAG_NAME,'li')
         urls = []
@@ -106,10 +100,14 @@ class Scraper:
                 if limit is not None and len(urls) >= limit:
                     break
                 el = res.find_element(By.TAG_NAME,'a')
-                res_name = el.text
+                try:
+                    res_name = el.find_element(By.TAG_NAME, 'p').text
+                except Exception as e:
+                    log('error', f'Unable to get restaurant from card {e}')
+                    res_name = ''
                 res_url = el.get_attribute('href')
                 urls.append((res_name,res_url))
-            except:
+            except Exception as e:
                 pass
         return urls
 
@@ -189,15 +187,23 @@ class Scraper:
         Dictionary of scraped data and jpgs of the restaurants.
         """
         log('info', f'Starting {num} restaurants scraping at address {self.address}')
+        log('info', 'Stage 1: accepting cookies...')
         self._accept_cookies()
+        log('info', f'Stage 2: entering address {self.address}')
         self._enter_address(self.address)
+        log('info', 'Stage 3: close any promotional pop ups')
         self._acknowledge_popups()
+        log('info', 'Stage 4: sort restaurants...')
         self._sort_page()
-        time.sleep(2)
+        time.sleep(10)
+        log('info', f'Stage 5: collect {num} restaurants...')
         urls = self._collect_restaurants(num)
         restaurants = self.existing_data
-        for (name, url) in urls:
+        log('info', f'Stage 6: Scraping each collected {len(urls)} restaurant...')
+        for i, (name, url) in enumerate(urls):
+            log('info', f'{i + 1}: Attempting to scrape {name}')
             if url in restaurants.__str__():
+                log('info', 'Restaurant already exists, skipping...')
                 continue
             try:
                 self.driver.get(url)
@@ -206,8 +212,8 @@ class Scraper:
                     data['uuid'] = str(uuid4())
                     data['url'] = url
                     restaurants.append(data)
-                except:
-                    print(f'Unable to scrape restaurant page {url}')
-            except:
-                print(f'Unable to open page {url}')
+                except Exception as e:
+                    log('error', f'Unable to scrape restaurant page {url}: {e}')
+            except Exception as e:
+                log('error', f'Unable to open page {url}: {e}')
         return restaurants
