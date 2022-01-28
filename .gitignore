@@ -151,3 +151,6 @@ data/
 # Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb
+
+# Deployment stuff
+*.pem
