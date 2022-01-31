@@ -154,3 +154,5 @@ data/
 
 # Deployment stuff
 *.pem
+Dockerfile.prod
+deploy.sh
