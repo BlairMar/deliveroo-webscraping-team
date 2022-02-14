@@ -32,7 +32,7 @@ class Upload:
         
         try:
             self.s3_client.upload_file(filename, bucketname, objectname)
-        except ClientError as e:
+        except Exception as e:
             log('error', f'Unable to upload file: {e}')
         return objectname
 

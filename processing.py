@@ -1,4 +1,3 @@
-
 import pandas as pd
 from uploads import Upload
 
@@ -41,17 +40,15 @@ def process(data):
         missing_rating = pd.isnull(df["rating"])
         df["rating"][missing_rating] = rating
 
-
         string_replacer('rating', 'Excellent')
         string_replacer('rating', 'Very good')
         string_replacer('rating', 'Good')
-
+    
     min_spend = list_of_items_by_word('minimum')
     df['minimum_spend'] = min_spend
     string_replacer('minimum_spend', '£')
     string_replacer('minimum_spend', 'minimum')
     string_replacer('minimum_spend', 'No', '0')
-
 
     closing = list_of_items_by_word('Closes at', 'Open until')
     df['closing_time'] = closing
@@ -72,29 +69,6 @@ def process(data):
     df['delivery_charge'] = df['delivery_charge'].str.replace('delivery', '')
     df['delivery_charge'] = df['delivery_charge'].str.replace('Free', '0')
 
-    # rawtagslist = []
-
-    # for lis in df['tags']:
-    #     for string in lis:
-    #         if string in rawtagslist:
-    #             pass
-    #         elif 'Info' in string or 'View map' in string or 'Delivered by' in string or 'order' in string or 'Editions' in string:
-    #             pass
-    #         elif ' ' in string:
-    #             if any(chr.isdigit() for chr in string) == True and 'min' not in string:
-    #                 pass
-    #             else:
-    #                 rawtagslist.append(string)
-    #         else:
-    #             rawtagslist.append(string)
-
-    # for tags in df['tags']:
-    #     for string in tags:
-    #         if string in rawtagslist:
-    #             pass
-    #         else:
-    #             tags.remove(string)
-
     remove_from_tags_by_string('View map', 'Editions', 'Delivered by', 'updates')
 
     delivery_time = list_of_items_by_word('-', 'min')
@@ -105,4 +79,4 @@ def process(data):
 
 def upload_images(df, directory):
     upload = Upload()
-    df['image_s3_key'] = df.apply(lambda entry: upload.upload_file(entry['image_path'], directory=directory))
+    df['image_s3_key'] = df.apply(lambda entry: upload.upload_file(entry['image_path'], directory=directory), axis=1)
