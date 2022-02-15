@@ -30,5 +30,11 @@ ENV DB_PORT=5432
 ENV SENTRY_DSN="https://d2744aa667304febbb8766ca55f650f8@o1086610.ingest.sentry.io/6098931"
 ENV SENTRY_ENVIRONMENT="dev"
 
+# Setup boto3
+
+ENV AWS_ACCESS_KEY_ID="AKIAZMXVD3RWL6EKMB56"
+ENV AWS_SECRET_ACCESS_KEY="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"
+ENV REGION_NAME="eu-west-2"
+
 RUN ["pip3", "install", "-r", "requirements.txt"]
 ENTRYPOINT [ "python3.8", "main.py" ]

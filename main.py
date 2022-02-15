@@ -1,7 +1,7 @@
 
 from scraper import Scraper
 from database import set_up_database
-from processing import process
+from processing import upload_images, process
 from logger import set_up_logger
 from config import set_up_config
 import json
@@ -43,14 +43,17 @@ def main():
     data = scraper.scrape(5)
     try:
         df = process(data)
+        upload_images(df, address)
         with engine.connect() as conn:
             df.to_sql(f'{address}', conn, if_exists='replace')
-    except:
+    except Exception as e:
+        print(e)
         print('Unable to process and save data to db...')
         print('Saving to json instead...')
         with open(f'{output_loc}/data.json', 'w') as outfile:
             json.dump(data, outfile,indent=2)
-   
+
+
 if __name__ == '__main__':
     main()
 
