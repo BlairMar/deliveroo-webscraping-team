@@ -79,4 +79,4 @@ def process(data):
 
 def upload_images(df, directory):
     upload = Upload()
-    df['image_s3_key'] = df.apply(lambda entry: upload.upload_file(entry['image_path'], directory=directory), axis=1)
+    df['image_s3_key'] = df.apply(lambda entry: upload.upload_file(entry['image_path'], directory=directory, bucketname='deliveroobucket'), axis=1)

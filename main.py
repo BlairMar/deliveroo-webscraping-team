@@ -46,7 +46,8 @@ def main():
         upload_images(df, address)
         with engine.connect() as conn:
             df.to_sql(f'{address}', conn, if_exists='replace')
-    except:
+    except Exception as e:
+        print(e)
         print('Unable to process and save data to db...')
         print('Saving to json instead...')
         with open(f'{output_loc}/data.json', 'w') as outfile:
