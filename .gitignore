@@ -141,3 +141,18 @@ cython_debug/
 *.png
 *.jpg
 *.jpeg
+
+# Data
+data/
+
+# macOS
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Deployment stuff
+*.pem
+Dockerfile.prod
+deploy.sh

@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+  del:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - del_db
+  del_db:
+    build: 
+      dockerfile: postgres.Dockerfile
+      context: .
+    ports:
+      - "5430:5432"

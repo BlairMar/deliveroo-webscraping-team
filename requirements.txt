@@ -1,0 +1,7 @@
+selenium
+sentry_sdk
+sqlalchemy
+pandas
+psycopg2
+requests
+boto3
